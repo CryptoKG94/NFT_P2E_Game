@@ -1,0 +1,16 @@
+.dashboard{
+    background-image: url("../../assest/images/home.png");
+
+    /* Full height */
+    height: 100%;
+    width: 100%;
+overflow-x: hidden;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.mainDashboard{
+    background-image: url("../../assest/images/7.png")!important;
+
+}

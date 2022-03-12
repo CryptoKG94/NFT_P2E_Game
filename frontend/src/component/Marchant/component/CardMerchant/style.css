@@ -1,0 +1,44 @@
+.CardMerchant{
+    background: rgba(255, 195, 195, 0.95);
+    border-radius: 5px;
+    margin-bottom: 12px;
+}
+
+.CardMarchantLogo{
+    display: flex;
+    justify-content: center;
+align-items: center;
+    padding: 12px;
+    margin-top: 12px;
+}
+.bottomBackground{
+    background: rgba(0,0,0,0.4);
+}
+.Character{
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 16px;
+    text-align: center;
+    color: white;
+
+}
+.oufit{
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 12px;
+    text-align: center;
+    color: white;
+
+}
+.MarchantPrice{
+    background: #29293a;
+    border-radius: 3px;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-around;
+    text-transform: uppercase;
+    padding: 3px;
+    font-weight: 600;
+align-items: center;
+}

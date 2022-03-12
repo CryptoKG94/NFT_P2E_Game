@@ -1,0 +1,102 @@
+
+.recruit{
+    background-image: url("../../assest/images/4.png");
+
+    /* Full height */
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+}
+.stack{
+    background-image: url("../../assest/images/5.png") !important;
+
+}
+.bank{
+    background-image: url("../../assest/images/1.png") !important;
+
+}
+.merchent{
+    background-image: url("../../assest/images/3.png") !important;
+
+}
+.marketPlace{
+    background-image: url("../../assest/images/6.png") !important;
+
+}
+.recruitButton{
+    display: flex;
+    justify-content: space-around;
+        align-items: center;
+}
+.displayRecruit{
+    display: flex;
+    justify-content: center;
+}
+
+
+/*full style*/
+.blackGlass{
+    background: rgba(0,0,0,0.5);
+max-width: 700px;
+
+    margin: auto;
+
+/*    display: flex;*/
+/*justify-content: center;*/
+/*    align-items: center;*/
+
+    border-radius: 5px;
+    padding: 22px;
+}
+.ParaRecruit{
+    font-size: 2.2rem;
+    text-transform: uppercase;
+font-weight: 600;
+    text-align: center;
+    color: white;
+}
+
+
+.GenContainer{
+    background: rgba(250, 201, 201, 0.95);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 4px;
+    border-radius: 4px;
+
+}
+.buttonGen{
+    font-size: 22px;
+    text-transform: uppercase;
+   width: 200px;
+    border-right: 3px solid black;
+    text-align: center;
+    padding: 4px 14px;
+}
+.buttonGen:hover{
+
+    background: red;
+
+}
+.buttonGen1{
+font-size: 22px;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 4px 14px;
+    width: 200px;
+}
+.buttonGen1:hover{
+background: red;
+}
+.genMintue{
+   text-transform: uppercase;
+    color: white;
+    font-size: 33px;
+    text-align: center;
+}

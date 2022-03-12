@@ -1,0 +1,38 @@
+
+.app{
+  width: 100vw;
+height: 100vh;
+  overflow: auto;
+}
+.greenSpan{
+  color: green;
+}
+.redSpan{
+  color: red;
+}
+html {
+  font-size: 65.5%;
+
+}
+
+
+@media only screen and (max-width: 1200px) {
+  html {
+    font-size: 65.5%;
+  }
+}
+
+
+@media only screen and (max-width: 996px) {
+  html {
+    font-size: 58.5%;
+
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  html {
+    font-size: 55.5%;
+
+  }
+}

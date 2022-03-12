@@ -1,0 +1,63 @@
+.navbar{
+    padding-top: 3.2rem;
+}
+.buttonDiv{
+    list-style: none;
+    text-decoration: none;
+}
+.buttonNav{
+    text-align: center;
+    background: red;
+    padding: 4px 8px;
+    border: 2px solid black;
+    border-radius: 8px;
+    list-style: none;
+}
+.linkNav{
+    text-decoration: none;
+    list-style: none;
+    color: white;
+    font-weight: 500;
+    font-style: normal;
+font-size: 15px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+
+@media only screen and (max-width: 1200px) {
+
+}
+@media only screen and (max-width: 768px) {
+    .linkNav{
+        text-decoration: none;
+        list-style: none;
+        color: white;
+        font-weight: 500;
+        font-style: normal;
+        font-size: 11px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+}
+@media only screen and (max-width: 556px) {
+    .buttonNav{
+        text-align: center;
+        background: red;
+        padding: 2px 3px;
+        border: 2px solid black;
+        border-radius: 8px;
+        list-style: none;
+    }
+    .linkNav{
+        text-decoration: none;
+        list-style: none;
+        color: white;
+        font-weight: 500;
+        font-style: normal;
+        font-size: 9px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+}

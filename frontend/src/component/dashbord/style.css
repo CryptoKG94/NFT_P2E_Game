@@ -1,0 +1,23 @@
+.mainBar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+.statistic{
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: white;
+text-decoration: none;
+    list-style: none;
+    border-bottom: 2px solid transparent;
+
+}.statistic:hover{
+
+    border-bottom: 2px solid #ffed89;
+
+}
+.some{
+    visibility: hidden;
+}

@@ -1,0 +1,47 @@
+.StackV{
+    display: flex;
+    justify-content: space-between;
+}
+.stackDiv{
+    display: flex;
+
+}
+.stake{
+    font-size: 2.2rem;
+    color: #999999;
+font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+    border-bottom: 3px solid transparent;
+}
+.stake:hover{
+
+    color: #ffffff;
+border-bottom: 3px solid #f3e480;
+}
+
+.textStake{
+    font-weight: 600;
+    font-size: 20px;
+    color: white;
+    text-transform: uppercase;
+}
+.stakes{
+    font-size: 1.6rem;
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+
+}
+.stackeImg{
+margin: auto;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.stakeText{
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bolder;
+    margin-top: 3px;
+}

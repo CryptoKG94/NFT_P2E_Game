@@ -1,0 +1,12 @@
+.homeSection{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.socialicon{
+    max-width: 400px;
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+}

@@ -1,0 +1,11 @@
+.connectButton{
+    background: red;
+color: white;
+    font-size: 1.2rem;
+    padding: .4rem 1.2rem;
+    text-decoration: none;
+    list-style: none;
+    border: 2px solid black;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
