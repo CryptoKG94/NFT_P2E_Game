@@ -17,7 +17,7 @@ const Recruit = () =>{
                 <ButtonBuy link={'/'} text={'Recruit'} />
             </div>
             <div className={'col-4 text-center'}>
-                <ConnectButton link={'/'} text={'connect wallet'} />
+                <ConnectButton />
             </div>
         </div>
     </div>

@@ -6,16 +6,16 @@ import {
     Route,
     Link, Redirect
 } from "react-router-dom";
-import Dashbord from "./component/dashbord";
+import Dashbord from "./view/dashbord";
 import ScrollToTop from "./utils/ScrollToTop";
-import Recruit from "./component/Recruit";
-import Marchant from "./component/Marchant";
-import Stake from "./component/Stake";
-import Bank from "./component/bank";
-import MarcketPlace from "./component/MarketPlace";
-import MainPage from "./component/MainPage";
-import MyNft from "./component/MyNft";
-import statics from "./component/dashbord/statics";
+import Recruit from "./view/Recruit";
+import Marchant from "./view/Marchant";
+import Stake from "./view/Stake";
+import Bank from "./view/bank";
+import MarcketPlace from "./view/MarketPlace";
+import MainPage from "./view/MainPage";
+import MyNft from "./view/MyNft";
+import statics from "./view/dashbord/statics";
 
 
 function App() {
