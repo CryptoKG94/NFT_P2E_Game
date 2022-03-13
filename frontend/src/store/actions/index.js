@@ -3,8 +3,8 @@ import {
     createAsyncAction as asyncAction 
 } from 'typesafe-actions';
 
-export const getNFTInfo = asyncAction(
-    'GET_NFT_PRICE',
-    'GET_NFT_PRICE_SUCCESS',
-    'GET_NFT_PRICE_FAIL'
+export const getZombieInfo = asyncAction(
+    'GET_ZOMBIE_INFO',
+    'GET_ZOMBIE_INFO_SUCCESS',
+    'GET_ZOMBIE_INFO_FAIL'
 )();

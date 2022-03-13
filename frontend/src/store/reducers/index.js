@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import valhallaReducer from './valhalla';
+import recruitReducer from './recruit';
 
 export const rootReducer = combineReducers({
-  valhalla: valhallaReducer,
+  recruit: recruitReducer,
 });
 
 const reducers = (state, action) => rootReducer(state, action);

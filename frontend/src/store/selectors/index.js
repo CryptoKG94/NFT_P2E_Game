@@ -1,2 +1,2 @@
 
-export const nftInfo = (state) => state.valhalla.nftInfo;
+export const zomibeInfo = (state) => state.recruit.zombieInfo;
