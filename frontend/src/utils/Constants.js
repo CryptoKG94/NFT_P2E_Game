@@ -1,5 +1,5 @@
 export const ContractAddress = "0x181aB2d2F0143cd2046253c56379f7eDb1E9C133";
-export const SnRAddress = "0xF95BD116A3A3E0053b0B757892450E5FCD55CaBF";
-export const YENAddress = "0x539D84B98556C474FEd2eAFE0Dd4e73fEb58f317";
-export const TraitsAddress = "0x63ca6Fe564015cd4140fA71771F5193E42da319B";
-export const LordAddress = "0x4C504C5F7F66657456fd67BeEE8E1A320F4a5Fbe";
+export const SnRAddress = "0x7fc0E8dD367E927b7D5Cdf9B329F39766F768f8f";
+export const YENAddress = "0xbdBC5b6007F510CDB71DA07089E4d0A898AA44Ee";
+export const TraitsAddress = "0x8DEC21F34F9cEdD1538327b64121425F1F7061D4";
+export const LordAddress = "0x1A67ACD12327B274baE5d874cb8Bbb6B12DeE7E1";
