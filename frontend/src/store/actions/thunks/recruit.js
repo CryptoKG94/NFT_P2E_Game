@@ -1,7 +1,7 @@
 import ContractUtils from '../../../utils/contractUtils';
 import * as actions from '../../actions';
 
-export const getZombieInfo = () => async (dispatch) => {
+export const getNFTInfo = () => async (dispatch) => {
 
   dispatch(actions.getZombieInfo.request(true));
   try {
@@ -9,7 +9,7 @@ export const getZombieInfo = () => async (dispatch) => {
     if (zombiePrice.success) {
       dispatch(actions.getZombieInfo.success(zombiePrice.status));
     } else {
-      dispatch(actions.getZombieInfo.failure(zombiePrice.status));  
+      dispatch(actions.getZombieInfo.failure(zombiePrice.status));
     }
   } catch (err) {
     dispatch(actions.getZombieInfo.failure(err));

@@ -1,27 +1,16 @@
-import WalletConnectProvider from '@walletconnect/web3-provider';
-import Web3Modal from 'web3modal';
 import Contract from 'web3-eth-contract';
 import * as Constants from './Constants';
 import BigNumber from "bignumber.js";
-import { ethers } from 'ethers'
 import { constants } from 'buffer';
 
 const Web3 = require('web3');
-const jsonFile = require("../contracts/contracts.json");
-const contractABI = jsonFile["abi"];
+const SnRContract = require("../contracts/SnRContract.json");
+const SnRContractABI = SnRContract["abi"];
+const LordContract = require("../contracts/LordContract.json");
+const LordContractABI = LordContract["abi"];
 
 let walletProvider = null;
 let walletAddress = "";
-
-const providerOptions = {
-    walletconnect: {
-        package: WalletConnectProvider, // required
-        options: {
-            infuraId: "460f40a260564ac4a4f4b3fffb032dad", // required
-            bridge: "https://bridge.walletconnect.org"
-        }
-    }
-};
 
 export const getBNBDecimals = () => {
     return 18;
@@ -40,7 +29,7 @@ export const setupNetwork = async () => {
                         chainId: `0x${chainId.toString(16)}`,
                         chainName: Constants.CHAIN_NAME[chainId],
                         nativeCurrency: Constants.NATIVE_CURRENCY[chainId],
-                        rpcUrls: [Constants.Node],
+                        rpcUrls: [Constants.NODE],
                         blockExplorerUrls: [Constants.BASE_BSC_SCAN_URLS[chainId]],
                     },
                 ],
@@ -60,9 +49,9 @@ export const getNFTPrice = async (provider, address) => {
 
     try {
         const web3 = new Web3(provider);
-        let contract = await new web3.eth.Contract(contractABI, Constants.ContractAddress)
+        let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
         
-        let price = await contract.methods.getPrice(address).call();
+        let price = await contract.methods.MINT_PRICE().call();
 
         return {
             success: true,
@@ -80,16 +69,15 @@ export const getNFTPrice = async (provider, address) => {
 export const mintNFT = async (provider, address, count) => {
 
     const web3 = new Web3(provider);
-    let contract = await new web3.eth.Contract(contractABI, Constants.ContractAddress)
+    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
 
     try {
-        let nftPrice = await contract.methods.getPrice().call();
-        let subMintedCount = await contract.methods.subMintedCount().call();
+        let nftPrice = await contract.methods.MINT_PRICE().call();
 
         let price = new BigNumber(nftPrice);
         let amount = price.multipliedBy(count);
 
-        await contract.methods.mintNFT(count).send({ from: walletAddress, value: amount });
+        await contract.methods.mint(count, false).send({ from: address, value: amount });
         return {
             success: true,
             status: 'Success'
@@ -118,7 +106,7 @@ export const getMetaData = async (hashVal) => {
 export const getAssetInfo = async (provider, address) => {
     
     const web3 = new Web3(provider);
-    let contract = await new web3.eth.Contract(contractABI, Constants.ContractAddress)
+    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
 
     try {
         let data = {
@@ -148,7 +136,7 @@ export const getAssetInfo = async (provider, address) => {
 export const withdraw = async (provider) => {
     
     const web3 = new Web3(provider);
-    let contract = await new web3.eth.Contract(contractABI, Constants.ContractAddress)
+    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
     try {
         await contract.methods.withdraw().send();
         return {
