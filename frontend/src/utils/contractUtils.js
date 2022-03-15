@@ -170,7 +170,7 @@ export const fetchUnstakedInfo = async (provider, account) => {
         const balance = await contract.methods.balanceOf(account).call()
         for (let i = 0; i < balance; i++) {
             const tokenId = await contract.methods.tokenOfOwnerByIndex(account, i).call()
-            const metadata = await contract.methods.traits(tokenId).call()
+            const metadata = await contract.methods.tokenTraits(tokenId).call()
             data.tokenIds.push(tokenId)
             data.metadatas.push(metadata)
         }

@@ -49,6 +49,8 @@ const Stake = () => {
 
     const [selectedUnStakedTokenIds, setSelectedUnStakedTokenIds] = useState([]);
     const [selectedStakedTokenIds, setSelectedStakedTokenIds] = useState([]);
+    const [roninAllSelected, setRoninAllSelected] = useState(false);
+    const [samAllSelected, setSamAllSelected] = useState(false);
 
     const fetchIsApprovedForAll = async () => {
         const isApp = await ContractUtils.isApprovedForAll(library, account);
@@ -77,7 +79,7 @@ const Stake = () => {
 
         let unstaked = initUnStakedInfo;
         if (account) {
-            const res = await ContractUtils.fetchUnStakedInfo(library, account)
+            const res = await ContractUtils.fetchUnstakedInfo(library, account)
 
             if (res.success) {
                 unstaked.balance = res.status.balances;
@@ -110,7 +112,7 @@ const Stake = () => {
 
     const IsSelected = (type, tokenId) => {
 
-        const list = type == 0 ? selectedUnStakedTokenIds : selectedStakedTokenIds
+        const list = type == UNSTAKETAB ? selectedUnStakedTokenIds : selectedStakedTokenIds
         for (let i = 0; i < list.length; i++) {
             if (list[i] == tokenId) {
                 return true;
@@ -133,7 +135,7 @@ const Stake = () => {
 
     const unstakedNFTClick = async (tokenId, index) => {
 
-        if (IsSelected(0, tokenId)) {
+        if (IsSelected(UNSTAKETAB, tokenId)) {
 
             let newlist = removeItemFromArray(
                 selectedUnStakedTokenIds,
@@ -151,7 +153,7 @@ const Stake = () => {
     }
 
     const stakedNFTClick = async (tokenId, index) => {
-        if (IsSelected(1, tokenId)) {
+        if (IsSelected(STAKETAB, tokenId)) {
             const newlist = removeItemFromArray(
                 selectedStakedTokenIds,
                 tokenId,
@@ -164,6 +166,60 @@ const Stake = () => {
         }
 
         setRedraw(!redraw)
+    }
+
+    const onClickRoninSelectAll = () => {
+        setRoninAllSelected(!roninAllSelected);
+        let newlist = tabStatus == STAKETAB ? selectedStakedTokenIds : selectedUnStakedTokenIds;
+        let info = tabStatus == STAKETAB ? stakedInfo : unstakedInfo;
+        if (roninAllSelected) {
+            info && info.tokenIds && info.tokenIds.map((tokenId, idx) => {
+                const item = info.metadatas[idx];
+                if (item.isRonin && !IsSelected(tabStatus, tokenId)) {
+                    newlist.push(tokenId);
+                }
+            })
+        } else {
+            info && info.tokenIds && info.tokenIds.map((tokenId, idx) => {
+                const item = info.metadatas[idx];
+                if (item.isRonin && IsSelected(tabStatus, tokenId)) {
+                    newlist = removeItemFromArray(
+                        newlist,
+                        tokenId,
+                    );
+                }
+            })
+        }
+        tabStatus == STAKETAB ? 
+        setSelectedStakedTokenIds(newlist) : 
+        setSelectedUnStakedTokenIds(newlist)
+    }
+
+    const onClickSamuSelectAll = () => {
+        setSamAllSelected(!samAllSelected);
+        let newlist = tabStatus == STAKETAB ? selectedStakedTokenIds : selectedUnStakedTokenIds;
+        let info = tabStatus == STAKETAB ? stakedInfo : unstakedInfo;
+        if (samAllSelected) {
+            info && info.tokenIds && info.tokenIds.map((tokenId, idx) => {
+                const item = info.metadatas[idx];
+                if (!item.isRonin && !IsSelected(tabStatus, tokenId)) {
+                    newlist.push(tokenId);
+                }
+            })
+        } else {
+            info && info.tokenIds && info.tokenIds.map((tokenId, idx) => {
+                const item = info.metadatas[idx];
+                if (!item.isRonin && IsSelected(tabStatus, tokenId)) {
+                    newlist = removeItemFromArray(
+                        newlist,
+                        tokenId,
+                    );
+                }
+            })
+        }
+        tabStatus == STAKETAB ? 
+        setSelectedStakedTokenIds(newlist) : 
+        setSelectedUnStakedTokenIds(newlist)
     }
 
     const handleStake = async () => {
@@ -244,8 +300,8 @@ const Stake = () => {
             <div className={'blackGlass mt-5'}>
                 <div className={'StackV container'}>
                     <div className={'stackDiv'}>
-                        <div className={'stake'} onClick={() => setTabStatus(STAKETAB)}>Stack - 30</div>
-                        <div className={'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStack - 30</div>
+                        <div className={ tabStatus == STAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(STAKETAB)}>Stack - 30</div>
+                        <div className={ tabStatus == UNSTAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStack - 30</div>
                     </div>
                     <div className={'d-flex justify-content-center align-items-center'}>
                         <Button className="buttonBuy" onClick={onClickBuyYen}>
@@ -264,20 +320,20 @@ const Stake = () => {
                     </div>
                     <div className={'d-flex justify-content-sm-between align-items-center'}>
                         <div className={'stakes'}>ronin - 12</div>
-                        <div className={'stakes'}>select all</div>
+                        <div className={'stakes stakes-btn'} onClick={onClickRoninSelectAll}>select all</div>
                     </div>
                     <div className={'row m-4'}>
                         {
                             tabStatus == STAKETAB ?
                                 stakedInfo && stakedInfo.tokenIds && stakedInfo.tokenIds.map((tokenId, idx) => {
                                     const item = stakedInfo.metadatas[idx];
-                                    const isSelected = IsSelected(0, tokenId);
+                                    const selected = IsSelected(STAKETAB, tokenId);
                                     if (item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'}>
-                                                <div className={'stackeImg'}>
-                                                    <img width='80' src={Img} alt={'/'} />
-                                                    <div className={'stakeText'}>#1.6541098641</div>
+                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
+                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
+                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
                                         )
@@ -286,13 +342,13 @@ const Stake = () => {
                                 :
                                 unstakedInfo && unstakedInfo.tokenIds && unstakedInfo.tokenIds.map((tokenId, idx) => {
                                     const item = unstakedInfo.metadatas[idx];
-                                    const isSelected = IsSelected(0, tokenId);
+                                    const selected = IsSelected(UNSTAKETAB, tokenId);
                                     if (item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'}>
-                                                <div className={'stackeImg'}>
-                                                    <img width='80' src={Img} alt={'/'} />
-                                                    <div className={'stakeText'}>#1.6541098641</div>
+                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
+                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
+                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
                                         )
@@ -302,20 +358,20 @@ const Stake = () => {
                     </div>
                     <div className={'d-flex justify-content-sm-between align-items-center'}>
                         <div className={'stakes'}>samurai</div>
-                        <div className={'stakes'}>select all</div>
+                        <div className={'stakes stakes-btn'} onClick={onClickSamuSelectAll}>select all</div>
                     </div>
                     <div className={'row m-4'}>
                         {
                             tabStatus == STAKETAB ?
                                 stakedInfo && stakedInfo.tokenIds && stakedInfo.tokenIds.map((tokenId, idx) => {
                                     const item = stakedInfo.metadatas[idx];
-                                    const isSelected = IsSelected(0, tokenId);
+                                    const selected = IsSelected(STAKETAB, tokenId);
                                     if (!item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'}>
-                                                <div className={'stackeImg'}>
-                                                    <img width='80' src={Img} alt={'/'} />
-                                                    <div className={'stakeText'}>#1.6541098641</div>
+                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
+                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
+                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
                                         )
@@ -324,13 +380,13 @@ const Stake = () => {
                                 :
                                 unstakedInfo && unstakedInfo.tokenIds && unstakedInfo.tokenIds.map((tokenId, idx) => {
                                     const item = unstakedInfo.metadatas[idx];
-                                    const isSelected = IsSelected(0, tokenId);
+                                    const selected = IsSelected(UNSTAKETAB, tokenId);
                                     if (!item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'}>
-                                                <div className={'stackeImg'}>
-                                                    <img width='80' src={Img} alt={'/'} />
-                                                    <div className={'stakeText'}>#1.6541098641</div>
+                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
+                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
+                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
                                         )
