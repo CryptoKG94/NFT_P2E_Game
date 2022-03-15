@@ -5,9 +5,31 @@ import ButtonBuy from "../../assest/Style/Navbutton";
 import ConnectButton from "../../assest/Style/ConnectButton";
 import CardBank from "../bank/component/Card";
 import CardMerchant from "./component/CardMerchant";
+import { height } from '@mui/system';
 
-const Marchant = () =>{
-    return(<>
+const Marchant = () => {
+    let merchantList = [
+        {
+            id: 0,
+            name: 'Portion',
+            price: '20000',
+            url: "images/potions.png",
+        },
+        {
+            id: 1,
+            name: 'Crossbow',
+            price: '25000',
+            url: "images/crossbow.png",
+        },
+        {
+            id: 2,
+            name: 'Shield',
+            price: '30000',
+            url: "images/shield.png",
+        }
+    ];
+
+    return (<>
         <div className={'recruit merchent'}>
             <div className={'displayRecruit mt-4'}>
                 <div className={'row container recruitButton'}>
@@ -22,18 +44,28 @@ const Marchant = () =>{
                     </div>
                 </div>
             </div>
-            <div className={'container'}>
-                <div className={'row'}>
-                    <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
+
+            <div className={'container'} style={{height: "90vh"}}>
+                <div className="card-container">
+                    <div className='sub-container'>
+                        <div className={'row'}>
+                            {
+                                merchantList.map((item) => {
+                                    return <CardMerchant merchant={item} />
+                                })
+                            }
+                            {/* <div className={'col-lg-4 col-md-4 col-sm-4 col-6'}>
                         <CardMerchant/>
                     </div>
 
-                    <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
+                    <div className={'col-lg-4 col-md-4 col-sm-4 col-6'}>
                         <CardMerchant/>
                     </div>
 
-                    <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
+                    <div className={'col-lg-4 col-md-4 col-sm-4 col-6'}>
                         <CardMerchant/>
+                    </div> */}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -41,4 +73,5 @@ const Marchant = () =>{
         </div>
     </>)
 }
+
 export default Marchant;
