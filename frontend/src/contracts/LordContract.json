@@ -375,6 +375,61 @@
     {
       "inputs": [
         {
+          "internalType": "uint16",
+          "name": "_tokenId",
+          "type": "uint16"
+        }
+      ],
+      "name": "getStakeIdInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint16",
+              "name": "tokenId",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint80",
+              "name": "value",
+              "type": "uint80"
+            },
+            {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct Lord.Stake",
+          "name": "stakeInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getStakeUserInfo",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_tokenIds",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "tokenId",
           "type": "uint256"
