@@ -12,7 +12,7 @@ const Toast = (props) => {
     const horizontal = "right"
     return (
         <Snackbar open={open} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical, horizontal }}>
-            <Alert onClose={handleClose} severity={type==1?"success":"error"} sx={{ width: '100%' }}>
+            <Alert onClose={handleClose} severity={type==1?"success":"error"} sx={{ width: '100%' }} style={{fontSize: "12px"}}>
                 {message}
             </Alert>
         </Snackbar>

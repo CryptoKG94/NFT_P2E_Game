@@ -137,15 +137,3 @@ background: red;
 .MuiOutlinedInput-notchedOutline {
     background-color: #ccc2;
 }
-
-.buttonBuy{
-    background: red !important;
-    color: white !important;
-    font-size: 1.2rem !important;
-    padding: .4rem 1.9rem !important;
-    text-decoration: none;
-    list-style: none;
-    border: 3px solid black !important;
-    border-radius: 9px !important;
-    text-transform: uppercase !important;
-}
