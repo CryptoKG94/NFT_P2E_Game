@@ -6,12 +6,13 @@
     display: flex;
 
 }
-.stake{
+.stake {
     font-size: 2.2rem;
     color: #999999;
     font-weight: 600;
     text-transform: uppercase;
     margin-left: 8px;
+    cursor: pointer;
     border-bottom: 3px solid transparent;
 }
 
@@ -20,12 +21,20 @@
     border-bottom: 3px solid #f3e480;
 }
 
-.textStake{
+.textStake {
     font-weight: 600;
     font-size: 20px;
     color: white;
     text-transform: uppercase;
 }
+
+.textReward {
+    font-weight: 600;
+    font-size: 18px;
+    color: white;
+    text-transform: uppercase;
+}
+
 .stakes{
     font-size: 1.6rem;
     color: #ffffff;

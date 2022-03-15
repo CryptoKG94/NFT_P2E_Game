@@ -66,7 +66,7 @@ const Stake = () => {
             fetchStakedInfo()
             setFetchFlag(false)
         }
-        // if (account) fetchReward()
+        if (account) fetchReward()
     }, [account, fetchFlag])
 
     const fetchReward = async () => {
@@ -191,9 +191,9 @@ const Stake = () => {
                 }
             })
         }
-        tabStatus == STAKETAB ? 
-        setSelectedStakedTokenIds(newlist) : 
-        setSelectedUnStakedTokenIds(newlist)
+        tabStatus == STAKETAB ?
+            setSelectedStakedTokenIds(newlist) :
+            setSelectedUnStakedTokenIds(newlist)
     }
 
     const onClickSamuSelectAll = () => {
@@ -218,9 +218,9 @@ const Stake = () => {
                 }
             })
         }
-        tabStatus == STAKETAB ? 
-        setSelectedStakedTokenIds(newlist) : 
-        setSelectedUnStakedTokenIds(newlist)
+        tabStatus == STAKETAB ?
+            setSelectedStakedTokenIds(newlist) :
+            setSelectedUnStakedTokenIds(newlist)
     }
 
     const handleStake = async () => {
@@ -231,12 +231,30 @@ const Stake = () => {
             return;
         }
 
+        if (selectedUnStakedTokenIds.length == 0) {
+            setShowToast(true);
+            setToastMessage("Please select NFT to stake");
+            setToastType(2);
+            return;
+        }
+
         if (!isApproved) {
             try {
                 setRequestedApproval(true);
-                await ContractUtils.setApprovalForAll(library, account);
+                let res = await ContractUtils.setApprovalForAll(library, account);
                 setIsApproved(true);
                 setRequestedApproval(false);
+
+                if (res.success) {
+                    setShowToast(true)
+                    setToastType(1)
+                    setToastMessage("Approved Successfully!");
+                } else {
+                    setShowToast(true);
+                    setToastMessage(res.status);
+                    setToastType(2)
+                }
+
             } catch {
                 console.log('Approve failed');
                 setRequestedApproval(false);
@@ -244,9 +262,19 @@ const Stake = () => {
         } else {
             try {
                 setRequestedApproval(true);
-                await ContractUtils.stake(library, account, selectedUnStakedTokenIds);
+                let res = await ContractUtils.stake(library, account, selectedUnStakedTokenIds);
                 setRequestedApproval(false)
                 setFetchFlag(true)
+
+                if (res.success) {
+                    setShowToast(true)
+                    setToastType(1)
+                    setToastMessage("Staked Successfully!");
+                } else {
+                    setShowToast(true);
+                    setToastMessage(res.status);
+                    setToastType(2)
+                }
             } catch {
                 console.log('Stake failed')
                 setRequestedApproval(false)
@@ -261,19 +289,68 @@ const Stake = () => {
             setToastType(2);
             return;
         }
+
+        if (selectedStakedTokenIds.length == 0) {
+            setShowToast(true);
+            setToastMessage("Please select NFT to unstake");
+            setToastType(2);
+            return;
+        }
+
         try {
             setRequestedApproval(true);
-            await ContractUtils.unStake(library, account, selectedUnStakedTokenIds, true);
+            let res = await ContractUtils.unStake(library, account, selectedStakedTokenIds, true);
             setRequestedApproval(false);
             setFetchFlag(true);
+
+            if (res.success) {
+                setShowToast(true)
+                setToastType(1)
+                setToastMessage("Unstaked Successfully!");
+            } else {
+                setShowToast(true);
+                setToastMessage(res.status);
+                setToastType(2)
+            }
         } catch {
             console.log('Stake failed');
             setRequestedApproval(false);
         }
     }
 
-    const onClickBuyYen = () => {
+    const onClickBuyYen = async () => {
+        if (!account) {
+            setShowToast(true);
+            setToastMessage("Please connect wallet");
+            setToastType(2);
+            return;
+        }
 
+        if (selectedStakedTokenIds.length == 0) {
+            setShowToast(true);
+            setToastMessage("Please select NFT to claim");
+            setToastType(2);
+            return;
+        }
+        try {
+            setRequestedApproval(true);
+            let res = await ContractUtils.unStake(library, account, selectedUnStakedTokenIds, false);
+            setRequestedApproval(false);
+            setFetchFlag(true);
+
+            if (res.success) {
+                setShowToast(true)
+                setToastType(1)
+                setToastMessage("Claimed Successfully!");
+            } else {
+                setShowToast(true);
+                setToastMessage(res.status);
+                setToastType(2)
+            }
+        } catch {
+            console.log('Stake failed');
+            setRequestedApproval(false);
+        }
     }
 
     const onToastClose = () => {
@@ -288,8 +365,8 @@ const Stake = () => {
                         <Backbutton link={'/'} />
                     </div>
                     <div className={'col-4 text-center'}>
-                        <Button className="buttonBuy" onClick={handleStake}>
-                            Stake
+                        <Button className="buttonBuy" disabled={tabStatus == STAKETAB ? true : false} onClick={handleStake}>
+                            {isApproved ? 'STAKE' : 'APPROVE'}
                         </Button>
                     </div>
                     <div className={'col-4 text-center'}>
@@ -301,14 +378,14 @@ const Stake = () => {
             <div className={'blackGlass mt-5'}>
                 <div className={'StackV container'}>
                     <div className={'stackDiv'}>
-                        <div className={ tabStatus == STAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(STAKETAB)}>Stack - 30</div>
-                        <div className={ tabStatus == UNSTAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStack - 30</div>
+                        <div className={tabStatus == STAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(STAKETAB)}>Stack - 30</div>
+                        <div className={tabStatus == UNSTAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStack - 30</div>
                     </div>
                     <div className={'d-flex justify-content-center align-items-center'}>
-                        <Button className="buttonBuy" onClick={onClickBuyYen}>
+                        <Button className="buttonBuy" disabled={tabStatus != STAKETAB ? true : false} onClick={onClickBuyYen}>
                             Claim YEN
                         </Button>
-                        <Button className="buttonBuy" onClick={onClickBuyYen}>
+                        <Button className="buttonBuy" disabled={tabStatus != STAKETAB ? true : false} onClick={handleUnStake}>
                             Claim YEN & Unstake
                         </Button>
                     </div>
@@ -316,6 +393,9 @@ const Stake = () => {
                 </div>
 
                 <div className={'my-5'}>
+                    <div style={{textAlign: "center"}}>
+                        <div className={'textReward'}> {`Reward: ${reward} YEN`}</div>
+                    </div>
                     <div className={'textStake'}>
                         you can only unstake if ronin collected at least 2$ bribe
                     </div>
@@ -333,7 +413,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
@@ -348,7 +428,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
@@ -371,7 +451,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={SamImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={SamImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
@@ -386,7 +466,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={SamImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={SamImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
