@@ -3,12 +3,12 @@
     {
       "inputs": [
         {
-          "internalType": "contract SamuraiAndRonin",
+          "internalType": "contract ISamuraiAndRonin",
           "name": "_game",
           "type": "address"
         },
         {
-          "internalType": "contract YEN",
+          "internalType": "contract IYEN",
           "name": "_yen",
           "type": "address"
         }
@@ -400,7 +400,7 @@
               "type": "address"
             }
           ],
-          "internalType": "struct Lord.Stake",
+          "internalType": "struct ILord.Stake",
           "name": "stakeInfo",
           "type": "tuple"
         }
@@ -439,7 +439,7 @@
       "outputs": [
         {
           "internalType": "bool",
-          "name": "ronin",
+          "name": "",
           "type": "bool"
         }
       ],
@@ -661,6 +661,19 @@
     },
     {
       "inputs": [],
+      "name": "randomSource",
+      "outputs": [
+        {
+          "internalType": "contract ISeed",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "renounceOwnership",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -701,6 +714,19 @@
         }
       ],
       "name": "setPaused",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract ISeed",
+          "name": "_seed",
+          "type": "address"
+        }
+      ],
+      "name": "setRandomSource",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
