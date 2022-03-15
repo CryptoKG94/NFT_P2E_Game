@@ -212,7 +212,7 @@ export const fetchStakedInfo = async (provider, account) => {
         let a = 0;
         for (a = 0; a < tokenIds.length; a++) {
             const tokenInfo = await snrContract.methods.tokenTraits(tokenIds[a]).call()
-            data.tokenIds.push(tokenInfo.tokenId)
+            data.tokenIds.push(tokenIds[a])
             data.metadatas.push(tokenInfo)
         }
 
