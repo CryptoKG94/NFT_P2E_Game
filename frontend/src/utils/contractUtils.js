@@ -8,6 +8,12 @@ const SnRContract = require("../contracts/SnRContract.json");
 const SnRContractABI = SnRContract["abi"];
 const LordContract = require("../contracts/LordContract.json");
 const LordContractABI = LordContract["abi"];
+const YenContract = require("../contracts/YENContract.json");
+const YenContractABI = YenContract["abi"];
+
+// MCB
+
+//
 
 let walletProvider = null;
 let walletAddress = "";
@@ -205,7 +211,7 @@ export const fetchStakedInfo = async (provider, account) => {
         const tokenIds = await lordContract.methods.getStakeUserInfo(account).call()
         let a = 0;
         for (a = 0; a < tokenIds.length; a++) {
-            const tokenInfo = await snrContract.methods.traits(tokenInfo.tokenId).call()
+            const tokenInfo = await snrContract.methods.tokenTraits(tokenIds[a]).call()
             data.tokenIds.push(tokenInfo.tokenId)
             data.metadatas.push(tokenInfo)
         }
@@ -370,6 +376,10 @@ export const withdraw = async (provider) => {
         }
     }
 }
+
+// MCB
+
+//
 
 const ContractUtils = {
     getBNBDecimals,
