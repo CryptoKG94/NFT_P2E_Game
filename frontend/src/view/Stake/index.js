@@ -3,7 +3,8 @@ import './style.css';
 import Backbutton from "../../assest/Style/Backbutton";
 import ButtonBuy from "../../assest/Style/Navbutton";
 import ConnectButton from "../../assest/Style/ConnectButton";
-import Img from '../../assest/images/6.png';
+import RoninImg from '../../assest/images/6_ronin.png';
+import SamImg from '../../assest/images/6_sam.png';
 import { mintNFT, getNFTInfo } from '../../store/actions/thunks';
 import { Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
@@ -305,10 +306,10 @@ const Stake = () => {
                     </div>
                     <div className={'d-flex justify-content-center align-items-center'}>
                         <Button className="buttonBuy" onClick={onClickBuyYen}>
-                            Buy yen
+                            Claim YEN
                         </Button>
                         <Button className="buttonBuy" onClick={onClickBuyYen}>
-                            Buy yen & Unstake
+                            Claim YEN & Unstake
                         </Button>
                     </div>
 
@@ -332,7 +333,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
@@ -347,7 +348,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
@@ -370,7 +371,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={SamImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
@@ -385,7 +386,7 @@ const Stake = () => {
                                         return (
                                             <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
                                                 <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={Img} alt={'NFT'} style={{borderRadius: '5px'}}/>
+                                                    <img width='80' src={SamImg} alt={'NFT'} style={{borderRadius: '5px'}}/>
                                                     <div className={'stakeText'}>0.1 FTM</div>
                                                 </div>
                                             </div>
