@@ -26,20 +26,15 @@ const Marchant = () =>{
                 <div className={'row'}>
                     <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
                         <CardMerchant/>
+                    </div>
 
-                    </div><div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
-                    <CardMerchant/>
+                    <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
+                        <CardMerchant/>
+                    </div>
 
-                </div><div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
-                    <CardMerchant/>
-
-                </div><div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
-                    <CardMerchant/>
-
-                </div><div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
-                    <CardMerchant/>
-
-                </div>
+                    <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
+                        <CardMerchant/>
+                    </div>
                 </div>
             </div>
 
