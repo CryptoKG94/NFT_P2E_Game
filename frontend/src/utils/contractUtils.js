@@ -297,6 +297,63 @@ export const isApprovedForAll = async (provider, account) => {
     }
 }
 
+// MCB
+
+export const buyPortions = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
+
+    try {
+        let res = await lordContract.methods.buyPortions(account, Constants.LordAddress);
+        return {
+            success: true,
+            status: true
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const buyCrossbows = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
+
+    try {
+        let res = await lordContract.methods.buyCrossBows(account, Constants.LordAddress);
+        return {
+            success: true,
+            status: true
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const setApprovalForYEN = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let yenContract = await new web3.eth.Contract(YENContractABI, Constants.SnRAddress)
+
+    try {
+        await snrContract.methods.setApprovalForAll(Constants.LordAddress, true);
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: "fail"
+        }
+    }
+}
+
+//
 export const withdraw = async (provider) => {
 
     const web3 = new Web3(provider);
@@ -328,6 +385,8 @@ const ContractUtils = {
     stake,
     unStake,
     isApprovedForAll,
+    buyPortions,
+    buyCrossbows,
 };
 
 export default ContractUtils;
