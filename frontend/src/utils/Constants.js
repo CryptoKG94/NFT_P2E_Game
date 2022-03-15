@@ -7,16 +7,20 @@ export const LordAddress = "0x8C6C7D628DbF631523B33634E8668e0EE20D6FCA";
 const MAINNET = 250
 const TESTNET = 4002
 
+const BSC = 56
+const BSCTEST = 97
 const POLYGON = 137
 const MUMBAI = 80001
 
-export const ChainID = 4002
+export const ChainID = BSCTEST
 
 export const CHAIN_NAME = {
     [MAINNET] : 'Fantom Mainnet',
     [TESTNET] : 'Fantom Testnet',
     [MUMBAI] : 'Polygon Testnet',
-    [POLYGON] : 'Polgyon Mainnet'
+    [POLYGON] : 'Polgyon Mainnet',
+    [BSCTEST] : 'BSC Testnet',
+    [BSC] : 'BSC Mainnet'
 }
 
 export const BASE_BSC_SCAN_URLS = {
@@ -30,7 +34,9 @@ export const NODE = {
     [TESTNET]: "https://rpc.testnet.fantom.network/",
     [MAINNET]: "https://rpcapi.fantom.network/",
     [MUMBAI] : 'https://matic-mumbai.chainstacklabs.com',
-    [POLYGON] : 'https://polygon-rpc.com/'
+    [POLYGON] : 'https://polygon-rpc.com/',
+    [BSC] : 'https://bsc-dataseed1.binance.org/',
+    [BSCTEST] : 'https://data-seed-prebsc-1-s1.binance.org:8545/'
 }
 
 export const NATIVE_CURRENCY = {
@@ -52,6 +58,11 @@ export const NATIVE_CURRENCY = {
     [POLYGON]: {
         name: 'MATIC',
         symbol: 'MATIC',
+        decimals: 18,
+    },
+    [BSCTEST]: {
+        name: 'BNB',
+        symbol: 'BNB',
         decimals: 18,
     }
 }
