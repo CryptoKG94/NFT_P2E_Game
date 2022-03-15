@@ -49,3 +49,16 @@ html {
   text-transform: uppercase !important;
 }
 
+.noBorder {
+  text-align: center;
+  border: solid 2px transparent;
+  padding: 5px;
+  border-radius: 15px;
+}
+.withBorder {
+  text-align: center;
+  border: solid 2px #56ff8e; 
+  padding: 5px;
+  border-radius: 15px;
+}
+
