@@ -9,6 +9,7 @@ import { height } from '@mui/system';
 import { useWeb3React } from '@web3-react/core';
 import ContractUtils from '../../utils/contractUtils';
 import Toast from '../../components/Toast';
+import { Paper, Button, Tabs, Box, Grid, FormControl, OutlinedInput, InputAdornment, Typography } from "@material-ui/core";
 
 const Marchant = () => {
     let merchantList = [
@@ -39,8 +40,27 @@ const Marchant = () => {
     const [toastType, setToastType] = useState(2) //1: success, 2: error
 
     const [requestedApproval, setRequestedApproval] = useState(false)
+    const [isApproved, setIsApproved] = useState(false)
+    const [fetchFlag, setFetchFlag] = useState(true)
+
+    const fetchIsApprovedForYEN = async () => {
+        const isApp = await ContractUtils.isApprovedForYEN(library, account);
+        setIsApproved(isApp.success);
+    }
+
+    useEffect(() => {
+        if (fetchFlag && account) {
+            console.log('fetchFlag:  TRUE')
+            fetchIsApprovedForYEN()
+            // fetchUnStakedInfo()
+            // fetchStakedInfo()
+            setFetchFlag(false)
+        }
+        // if (account) fetchReward()
+    }, [account, fetchFlag])
 
     const handleBuyPortions = async () => {
+        console.log("handleBuyPortions");
         if (!account) {
             setShowToast(true);
             setToastMessage("Please connect wallet");
@@ -51,7 +71,7 @@ const Marchant = () => {
         if (!isApproved) {
             try {
                 setRequestedApproval(true);
-                await ContractUtils.setApprovalForAll(library, account);
+                await ContractUtils.setApprovalForYEN(library, account);
                 setIsApproved(true);
                 setRequestedApproval(false);
             } catch {
@@ -60,15 +80,90 @@ const Marchant = () => {
             }
         } else {
             try {
+                
                 setRequestedApproval(true);
-                await ContractUtils.buyPortions(library, account, selectedUnStakedTokenIds);
+                await ContractUtils.buyPortions(library, account);
                 setRequestedApproval(false)
                 setFetchFlag(true)
+                console.log("Success buy portion");
             } catch {
                 console.log('Stake failed')
                 setRequestedApproval(false)
             }
         }
+    }
+
+    const onSeekApproval = async token => {
+        // await dispatch(changeApproval({ address, provider, networkID: chainID }));
+        setRequestedApproval(true);
+        await ContractUtils.setApprovalForYEN(library, account);
+        setIsApproved(true);
+    };
+
+    let modalButton = [];
+
+    modalButton.push(
+        <Button
+          className="stake-button"
+          variant="contained"
+          color="primary"
+        //   disabled={isPendingTxn(pendingTransactions, "approve_presale")}
+          onClick={() => {
+            onSeekApproval();
+          }}
+        >
+          {/* {txnButtonText(pendingTransactions, "approve_presale", "Approve")} */}
+          Approve
+        </Button>
+    )
+
+    modalButton.push(
+        <Button
+          className="stake-button"
+          variant="contained"
+          color="primary"
+        //   disabled={isPendingTxn(pendingTransactions, "approve_presale")}
+          onClick={() => {
+            handleBuyPortions();
+          }}
+        >
+          {/* {txnButtonText(pendingTransactions, "approve_presale", "Approve")} */}
+          Buy Portion
+        </Button>
+    )
+
+    modalButton.push(
+        <Button
+          className="stake-button"
+          variant="contained"
+          color="primary"
+        //   disabled={isPendingTxn(pendingTransactions, "approve_presale")}
+          onClick={() => {
+            handleBuyPortions();
+          }}
+        >
+          {/* {txnButtonText(pendingTransactions, "approve_presale", "Approve")} */}
+          Buy Crossbow
+        </Button>
+    )
+
+    modalButton.push(
+        <Button
+          className="stake-button"
+          variant="contained"
+          color="primary"
+        //   disabled={isPendingTxn(pendingTransactions, "approve_presale")}
+          onClick={() => {
+            handleBuyPortions();
+          }}
+        >
+          {/* {txnButtonText(pendingTransactions, "approve_presale", "Approve")} */}
+          Buy Shield
+        </Button>
+    )
+
+    const onToastClose = () => {
+        setShowToast(false);
     }
 
     return (<>
@@ -79,7 +174,9 @@ const Marchant = () => {
                         <Backbutton link={'/'} />
                     </div>
                     <div className={'col-4 text-center'}>
-                        <ButtonBuy link={'/'} text={'Merchant'} />
+                        <Button className="buttonBuy">
+                            Merchant
+                        </Button>
                     </div>
                     <div className={'col-4 text-center'}>
                         <ConnectButton link={'/'} text={'connect wallet'} />
@@ -93,7 +190,10 @@ const Marchant = () => {
                         <div className={'row'}>
                             {
                                 merchantList.map((item) => {
-                                    return <CardMerchant merchant={item} />
+                                    return <CardMerchant merchant={item} 
+                                            handleBuyPortions={handleBuyPortions}
+                                            modalButton={modalButton}
+                                            />
                                 })
                             }
                             {/* <div className={'col-lg-4 col-md-4 col-sm-4 col-6'}>

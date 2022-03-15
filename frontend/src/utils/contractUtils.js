@@ -12,7 +12,7 @@ const YenContract = require("../contracts/YENContract.json");
 const YenContractABI = YenContract["abi"];
 
 // MCB
-
+// import { ethers } from "ethers";
 //
 
 let walletProvider = null;
@@ -303,6 +303,24 @@ export const isApprovedForAll = async (provider, account) => {
     }
 }
 
+
+export const withdraw = async (provider) => {
+
+    const web3 = new Web3(provider);
+    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
+    try {
+        await contract.methods.withdraw().send();
+        return {
+            success: true,
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
 // MCB
 
 export const buyPortions = async (provider, account) => {
@@ -343,10 +361,10 @@ export const buyCrossbows = async (provider, account) => {
 
 export const setApprovalForYEN = async (provider, account) => {
     const web3 = new Web3(provider);
-    let yenContract = await new web3.eth.Contract(YENContractABI, Constants.SnRAddress)
+    let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
 
     try {
-        await snrContract.methods.setApprovalForAll(Constants.LordAddress, true);
+        await yenContract.methods.approve(Constants.LordAddress,web3.utils.fromWei("1000000000"));
         return {
             success: true,
             status: "success"
@@ -359,15 +377,22 @@ export const setApprovalForYEN = async (provider, account) => {
     }
 }
 
-//
-export const withdraw = async (provider) => {
-
+export const isApprovedForYEN = async (provider, account) => {
     const web3 = new Web3(provider);
-    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
+    let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
+
     try {
-        await contract.methods.withdraw().send();
-        return {
-            success: true,
+        let res = await yenContract.allowance(account, Constants.LordAddress);
+        if (res > 0) {
+            return {
+                success: true,
+                status: true
+            }
+        } else {
+            return {
+                success: false,
+                status: true
+            }
         }
     } catch (err) {
         return {
@@ -376,8 +401,6 @@ export const withdraw = async (provider) => {
         }
     }
 }
-
-// MCB
 
 //
 
@@ -388,6 +411,13 @@ const ContractUtils = {
     getNFTPrice,
     withdraw,
 
+// MCB
+    buyPortions,
+    buyCrossbows,
+    isApprovedForYEN,
+    setApprovalForYEN,
+//
+
     fetchStakingReward,
     fetchStakedInfo,
     fetchUnstakedInfo,
@@ -395,8 +425,6 @@ const ContractUtils = {
     stake,
     unStake,
     isApprovedForAll,
-    buyPortions,
-    buyCrossbows,
 };
 
 export default ContractUtils;

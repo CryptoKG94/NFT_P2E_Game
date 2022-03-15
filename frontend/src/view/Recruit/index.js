@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import Backbutton from "../../assest/Style/Backbutton";
-import ButtonBuy from "../../assest/Style/Navbutton";
 import { Button } from '@mui/material';
 import ConnectButton from "../../assest/Style/ConnectButton";
 import Img from '../../assest/images/img1.png'
