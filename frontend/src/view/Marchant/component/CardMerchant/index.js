@@ -3,7 +3,7 @@ import { Paper, Button, Tabs, Box, Grid, FormControl, OutlinedInput, InputAdornm
 import './style.css';
 
 
-const CardMerchant = ({merchant, handleBuyPortions, modalButton}) =>{
+const CardMerchant = ({merchant, modalButton}) =>{
     console.log("merchant:", merchant);
     return(
         <div className = {'CardMerchant col-lg-4 col-md-4 col-sm-6 col-6 mx-auto'} style={{width: "300px"}}>
@@ -22,11 +22,10 @@ const CardMerchant = ({merchant, handleBuyPortions, modalButton}) =>{
                 <div>
                     {'Price: ' + merchant.price+'YEN'}
                 </div>
-                {modalButton[merchant.id+1]}
+                {modalButton[merchant.id]}
                 {/* <Button variant="text" onClick={handleBuyPortions}>
                     buy now
                 </Button> */}
-                {/* <div>buy now</div> */}
             </div>
         </div>
     );

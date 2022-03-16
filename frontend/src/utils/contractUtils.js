@@ -328,7 +328,8 @@ export const buyPortions = async (provider, account) => {
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
 
     try {
-        let res = await lordContract.methods.buyPortions(account, Constants.LordAddress);
+        console.log("buy portions");
+        let res = await lordContract.methods.buyPortions(1).send({ from: account });
         return {
             success: true,
             status: true
@@ -346,7 +347,27 @@ export const buyCrossbows = async (provider, account) => {
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
 
     try {
-        let res = await lordContract.methods.buyCrossBows(account, Constants.LordAddress);
+        console.log("buy crossbow");
+        let res = await lordContract.methods.buyCrossBows(1, true).send({ from: account });
+        return {
+            success: true,
+            status: true
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const buyShields = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
+
+    try {
+        console.log("buy shield");
+        let res = await snrContract.methods.buyShields(1).send({ from: account });
         return {
             success: true,
             status: true
@@ -414,6 +435,7 @@ const ContractUtils = {
 // MCB
     buyPortions,
     buyCrossbows,
+    buyShields,
     isApprovedForYEN,
     setApprovalForYEN,
 //
