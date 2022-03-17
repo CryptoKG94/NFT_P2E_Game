@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^ 0.8.10;
+pragma solidity ^ 0.8.0;
 
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "./SamuraiAndRonin.sol";
 import "./YEN.sol";
 
-contract MarketPlace is Ownable {
+contract MarketPlace is Ownable, IERC721Receiver {
 
     // uint8 constant IS_USER = 0;
     uint8 constant IS_RESELLER = 1;
@@ -15,7 +15,6 @@ contract MarketPlace is Ownable {
 
     struct SaleInfo {
         uint256 tokenId;
-        string tokenHash;
         address creator;
         address currentOwner;
         uint256 startPrice;
@@ -23,8 +22,6 @@ contract MarketPlace is Ownable {
         uint256 maxBid;
         uint256 startTime;
         uint256 interval;
-        uint24 royaltyRatio;
-        uint8 kindOfCoin;
         bool _isOnSale;
     }
 
@@ -35,21 +32,26 @@ contract MarketPlace is Ownable {
         DIRECT_BUY
     }
 
+    event PlaceBid(address bidder, uint bid);
+    event PerformBid(address nftSeller, address nftBuyer, uint256 amount);
+    event DestroySale(uint256 tokenId);
+
     address mkOwner;
-    address mkNFTaddress;
-    SamuraiAndRonin mkNFT;
-    YEN SPCToken;
+    address snraddress;
+    SamuraiAndRonin snr;
+    YEN yen;
 
     uint _saleIdCounter;
     bool _status;
-    bool _isMinting;
 
     mapping(uint => SaleInfo) _allSaleInfo;
-    mapping(string => uint) _getSaleId;
-    mapping(string => bool) _tokenHashExists;
+    mapping(uint256 => uint) _getSaleId;
+    mapping(uint256 => bool) _tokenIdExists;
     mapping(address => uint8) _isCreator;
     mapping(address => uint256) _mintingFees;
-    mapping(address => uint24) _sellingRatio;
+    // mapping(address => uint24) _sellingRatio;
+    uint256 saleFee = 10;
+    uint256 royaltyFee = 10;
 
     modifier onlyAdmin() {
         require(_isCreator[msg.sender] == IS_CREATOR || mkOwner == msg.sender, "Not NFT creater...");
@@ -61,8 +63,8 @@ contract MarketPlace is Ownable {
         _;
     }
 
-    modifier notOnlyNFTOwner(string memory _tokenHash) {
-        require(_allSaleInfo[_getSaleId[_tokenHash]].currentOwner != msg.sender, "NFT Owner cannot bid...");
+    modifier notOnlyNFTOwner(uint256 _tokenId) {
+        require(_allSaleInfo[_tokenId].currentOwner != msg.sender, "NFT Owner cannot bid...");
         _;
     }
 
@@ -75,219 +77,208 @@ contract MarketPlace is Ownable {
 
     constructor(address _nftAddress, address _spcAddress) {
         mkOwner = msg.sender;
-        mkNFTaddress = _nftAddress;
-        SPCToken = YEN(_spcAddress);
+        snraddress = _nftAddress;
+        yen = YEN(_spcAddress);
         _saleIdCounter = 0;
         _status = false;
-        _isMinting = false;
     }
 
-    function mintSingleNFT(string memory _tokenHash) internal {
-        require(!_tokenHashExists[_tokenHash], "Existing NFT hash value....");
-        mkNFT = SamuraiAndRonin(mkNFTaddress);
-        mkNFT.mintNFT(_tokenHash);
-        _tokenHashExists[_tokenHash] = true;
-        _isMinting = true;
-    }
-
-    function mintMultipleNFT(string[] memory _tokenHashs) internal {
-        for (uint256 i = 0; i < _tokenHashs.length; i++) {
-            require(!_tokenHashExists[_tokenHashs[i]], "Existing NFT hash value....");
-            mkNFT = SamuraiAndRonin(mkNFTaddress);
-            mkNFT.mintNFT(_tokenHashs[i]);
-            _tokenHashExists[_tokenHashs[i]] = true;
-        }
-        _isMinting = true;
-    }
-
-    function createSale(string memory _tokenHash, uint _interval, uint _startPrice, uint24 _royalty, uint8 _kind) public nonReentrant onlyReseller returns (bool) {
+    function createSale(uint256 _tokenId, uint _interval, uint _startPrice) public nonReentrant onlyReseller returns (bool) {
         require(_interval >= 0, "Invalid auction interval....");
-        require(_royalty >= 0, "Invalid royalty value....");
-        require(_tokenHashExists[_tokenHash], "Non-Existing NFT hash value....");
+        // require(_tokenIdExists[_tokenId], "Non-Existing NFT hash value....");
+        require(snr.ownerOf(_tokenId) == _msgSender(), "You didn't own this token");
 
         SaleInfo memory saleInfo;
 
-        if (!_isMinting) {
-            mkNFT.tranferNFT(msg.sender, address(this), _tokenHash);
-            saleInfo = SaleInfo(_saleIdCounter, _tokenHash, _allSaleInfo[_getSaleId[_tokenHash]].creator, msg.sender, _startPrice, address(0), 0, block.timestamp, _interval, _royalty, _kind, true);
+        snr.transferFrom(msg.sender, address(this), _tokenId);
+        address creator;
+        if (_allSaleInfo[_tokenId].creator != address(0)) {
+            creator = _allSaleInfo[_tokenId].creator;
         } else {
-            saleInfo = SaleInfo(_saleIdCounter, _tokenHash, msg.sender, msg.sender, _startPrice, address(0), 0, block.timestamp, _interval, _royalty, _kind, true);
+            creator = msg.sender;
         }
-              
-        _allSaleInfo[_saleIdCounter] = saleInfo;
-        _getSaleId[_tokenHash] = _saleIdCounter;
+        saleInfo = SaleInfo(_tokenId, msg.sender, msg.sender, _startPrice, address(0), 0, block.timestamp, _interval, true);
+
+        _allSaleInfo[_tokenId] = saleInfo;
+        // _getSaleId[_tokenId] = _saleIdCounter;
         _saleIdCounter++;
-        return true;
-    }
-
-    function createBatchSale(string[] memory _tokenHashs, uint _startPrice, uint24 _royalty, uint8 _kind) public {
-        for (uint256 i = 0; i < _tokenHashs.length; i++) {
-            createSale(_tokenHashs[i], 0, _startPrice, _royalty, _kind);
-        }
-    }
-
-    function singleMintOnSale(string memory _tokenHash, uint _interval, uint _startPrice, uint24 _royalty, uint8 _kind) external payable onlyAdmin {
-        mintSingleNFT(_tokenHash);
-        createSale(_tokenHash, _interval, _startPrice, _royalty, _kind);
-        _isMinting = false;
-    }
-
-    function batchMintOnSale(string[] memory _tokenHashs, uint _startPrice, uint24 _royalty, uint8 _kind) external payable onlyAdmin {
-        mintMultipleNFT(_tokenHashs);
-        createBatchSale(_tokenHashs, _startPrice, _royalty, _kind);
-        _isMinting = false;
-    }
-
-    function destroySale(string memory _tokenHash) external onlyReseller nonReentrant returns (bool) {
-        require(_tokenHashExists[_tokenHash], "Non-Existing NFT hash value....");
-        require(getAuctionState(_tokenHash) != AuctionState.CANCELLED, "Auction state is already cancelled...");
-
-        if (_allSaleInfo[_getSaleId[_tokenHash]].maxBid != 0) {
-            customizedTransfer(payable(_allSaleInfo[_getSaleId[_tokenHash]].maxBidder), _allSaleInfo[_getSaleId[_tokenHash]].maxBid, _allSaleInfo[_getSaleId[_tokenHash]].kindOfCoin);
-        }
-
-        mkNFT.tranferNFT(address(this), _allSaleInfo[_getSaleId[_tokenHash]].currentOwner, _tokenHash);
-        _allSaleInfo[_getSaleId[_tokenHash]]._isOnSale = false;
-        emit DestroySale(_tokenHash);
-        return true;
-    }
-
-    function placeBid(string memory _tokenHash) payable external nonReentrant notOnlyNFTOwner(_tokenHash) returns (bool) {
-        require(_tokenHashExists[_tokenHash], "Non-Existing NFT hash value....");
-        require(getAuctionState(_tokenHash) == AuctionState.OPEN || getAuctionState(_tokenHash) == AuctionState.DIRECT_BUY, "Auction state is not open...");
-        require(msg.value >= _allSaleInfo[_getSaleId[_tokenHash]].startPrice, "Starting price is too low...");
-
-        if (_allSaleInfo[_getSaleId[_tokenHash]].kindOfCoin > 0) {
-            SPCToken.transferFrom(msg.sender, address(this), msg.value);
-        }
-
-        address lastHightestBidder = _allSaleInfo[_getSaleId[_tokenHash]].maxBidder;
-        uint256 lastHighestBid = _allSaleInfo[_getSaleId[_tokenHash]].maxBid;
-        _allSaleInfo[_getSaleId[_tokenHash]].maxBid = msg.value;
-        _allSaleInfo[_getSaleId[_tokenHash]].maxBidder = msg.sender;
-
-        if (lastHighestBid != 0) {
-            customizedTransfer(payable(lastHightestBidder), lastHighestBid, _allSaleInfo[_getSaleId[_tokenHash]].kindOfCoin);
-        }
-    
-        emit PlaceBid(msg.sender, msg.value);
         
         return true;
-    } 
+    }
 
-    function performBid(string memory _tokenHash) external nonReentrant returns (bool) {
-        require(_tokenHashExists[_tokenHash], "Non-Existing NFT hash value....");
-        require(getAuctionState(_tokenHash) == AuctionState.OPEN || getAuctionState(_tokenHash) == AuctionState.ENDED || getAuctionState(_tokenHash) == AuctionState.DIRECT_BUY, "Auction state is not correct...");
-        SaleInfo memory saleInfo = _allSaleInfo[_getSaleId[_tokenHash]];
-        uint256 royaltyAmount = saleInfo.maxBid * saleInfo.royaltyRatio / 100;
-        uint256 salePrice = saleInfo.maxBid - saleInfo.maxBid * _sellingRatio[saleInfo.currentOwner] / 100 - royaltyAmount;
+    function destroySale(uint256 _tokenId) external onlyReseller nonReentrant returns (bool) {
+        // require(_tokenIdExists[_tokenId], "Non-Existing NFT hash value....");
+        // require(getAuctionState(_tokenId) != AuctionState.CANCELLED, "Auction state is already cancelled...");
+        SaleInfo storage saleInfo = _allSaleInfo[_tokenId];
+        require(saleInfo.currentOwner == msg.sender, "You didn't upload this token to market place");
+        require(saleInfo._isOnSale == true, "this token is not avaliable");
+        require(saleInfo.startTime + saleInfo.interval < block.timestamp, "You can cancel sale only before auction done");
+        
+        uint256 safeFeeAmount = saleInfo.startPrice * saleFee / 100;
+        require(yen.balanceOf(msg.sender) >= safeFeeAmount, "You should pay sale fee");
 
-        mkNFT.tranferNFT(address(this), saleInfo.maxBidder, _tokenHash);
-
-        customizedTransfer(payable(saleInfo.creator), royaltyAmount, saleInfo.kindOfCoin);
-        customizedTransfer(payable(saleInfo.currentOwner), salePrice, saleInfo.kindOfCoin);
-
-        saleInfo.currentOwner = saleInfo.maxBidder;
-        saleInfo.startPrice = saleInfo.maxBid;
+        if (saleInfo.maxBid != 0) {
+            yen.transfer(saleInfo.maxBidder, saleInfo.maxBid);
+            saleInfo.maxBidder == address(0);
+            saleInfo.maxBid = 0;
+        }
+        
+        yen.burn(msg.sender, safeFeeAmount);
+        snr.transferFrom(address(this), saleInfo.currentOwner, _tokenId);
+        saleInfo.currentOwner = address(0);
         saleInfo._isOnSale = false;
+        
+        emit DestroySale(_tokenId);
 
-        _allSaleInfo[_getSaleId[_tokenHash]] = saleInfo;
-
-        emit PerformBid(msg.sender, saleInfo.maxBidder, saleInfo.maxBid);
         return true;
     }
 
-    function getAuthentication(address _addr) external view returns (uint8) {
-        require(_addr != address(0), "Invalid input address...");
-        return _isCreator[_addr];
-    }
-
-    function getAuctionState(string memory _tokenHash) public view returns (AuctionState) {
-        if (!_allSaleInfo[_getSaleId[_tokenHash]]._isOnSale) return AuctionState.CANCELLED;
-        if (_allSaleInfo[_getSaleId[_tokenHash]].interval == 0) return AuctionState.DIRECT_BUY;
-        if (block.timestamp >= _allSaleInfo[_getSaleId[_tokenHash]].startTime + _allSaleInfo[_getSaleId[_tokenHash]].interval) return AuctionState.ENDED;
-        return AuctionState.OPEN;
-    } 
-
-    function getSaleInfo(string memory _tokenHash) public view returns (SaleInfo memory) {
-        require(_tokenHashExists[_tokenHash], "Non-Existing NFT hash value....");
-
-        return _allSaleInfo[_getSaleId[_tokenHash]];
-    }
-
-    function getWithdrawBalance(uint8 _kind) public view returns (uint256) {
-        require(_kind >= 0, "Invalid cryptocurrency...");
-
-        if (_kind == 0) {
-          return address(this).balance;
-        } else {
-          return SPCToken.balanceOf(address(this));
-        }
-    }
-
-    function setOwner(address payable _newOwner) external onlyOwner {
-        require(_newOwner != address(0), "Invalid input address...");
-        mkOwner = _newOwner;
-        transferOwnership(mkOwner);
-    }
-
-    function setAuthentication(address _addr, uint8 _flag) external onlyOwner {
-        require(_addr != address(0), "Invalid input address...");
-        _isCreator[_addr] = _flag;
-    }
-
-    function setMintingFee(address _creater, uint256 _amount) external onlyOwner {
-        require(_creater != address(0), "Invalid input address...");
-        require(_amount >= 0, "Too small amount");
-        _mintingFees[_creater] = _amount;
-    }
-
-    function setSellingFee(address _seller, uint24 _ratio) external onlyOwner {
-        require(_seller != address(0), "Invalid input address...");
-        require(_ratio >= 0, "Too small ratio");
-        require(_ratio < 100, "Too large ratio");
-        _sellingRatio[_seller] = _ratio;
-    }
-
-    function customizedTransfer(address payable _to, uint256 _amount, uint8 _kind) internal {
-        require(_to != address(0), "Invalid address...");
-        require(_amount >= 0, "Invalid transferring amount...");
-        require(_kind >= 0, "Invalid cryptocurrency...");
+    function placeBid(uint256 _tokenId, uint256 _amount) external nonReentrant notOnlyNFTOwner(_tokenId) returns (bool) {
+        // require(_tokenIdExists[_tokenId], "Non-Existing NFT hash value....");
+        // require(getAuctionState(_tokenId) == AuctionState.OPEN || getAuctionState(_tokenId) == AuctionState.DIRECT_BUY, "Auction state is not open...");
         
-        if (_kind == 0) {
-          _to.transfer(_amount);
-        } else {
-          SPCToken.transfer(_to, _amount);
+        SaleInfo storage saleInfo = _allSaleInfo[_tokenId];
+        require(saleInfo._isOnSale == true, "Invalid token Id");
+        require(_amount >= saleInfo.startPrice, "Starting price is too low...");
+        require(_amount > saleInfo.maxBid, "You should bit with over max bid price");
+        require(saleInfo.startTime + saleInfo.interval < block.timestamp, "Auction has already done.");
+
+        yen.transferFrom(msg.sender, address(this), _amount);
+        
+        if (saleInfo.maxBid > 0) {
+            yen.transfer(saleInfo.maxBidder, saleInfo.maxBid);
         }
+        saleInfo.maxBid = _amount;
+        saleInfo.maxBidder = msg.sender;
+
+        emit PlaceBid(msg.sender, _amount);
+        
+        return true;
     }
 
-    function withDraw(uint256 _amount, uint8 _kind) external onlyOwner {
-        require(_amount > 0, "Invalid withdraw amount...");
-        require(_kind >= 0, "Invalid cryptocurrency...");
-        require(getWithdrawBalance(_kind) > _amount, "None left to withdraw...");
+    function performBid(uint256 _tokenId) external nonReentrant returns (bool) {
+        SaleInfo storage saleInfo = _allSaleInfo[_tokenId];
+        require(saleInfo._isOnSale == true, "Invalid token Id");
+        require(saleInfo.maxBidder != address(0), "There should be at least one bidder");
+        if (saleInfo.startTime + saleInfo.interval > block.timestamp) {
+            require(saleInfo.currentOwner == msg.sender || msg.sender == saleInfo.maxBidder, "Both NFT owner and Max Bidder can call this function after action done");
+        } else {
+            require(saleInfo.currentOwner == msg.sender, "Only NFT owner can call this function before auction done");
+        }
+        
+        uint256 royaltyAmount = saleInfo.maxBid * royaltyFee / 100;
+        uint256 saleFeeAmount = saleInfo.maxBid * saleFee / 100;
+        uint256 salePrice = saleInfo.maxBid - saleFeeAmount - royaltyAmount;
 
-        customizedTransfer(payable(msg.sender), _amount, _kind);
+        snr.transferFrom(address(this), saleInfo.maxBidder, _tokenId);
+
+        yen.transfer(saleInfo.creator, royaltyAmount);
+        yen.burn(address(this), saleFeeAmount);
+        yen.transfer(saleInfo.currentOwner, salePrice);
+
+        address bidder = saleInfo.maxBidder;
+        saleInfo._isOnSale = false;
+        saleInfo.maxBidder = address(0);
+
+        emit PerformBid(saleInfo.currentOwner, bidder, saleInfo.maxBid);
+
+        return true;
     }
 
-    function withDrawAll(uint8 _kind) external onlyOwner {
-        require(_kind >= 0, "Invalid cryptocurrency...");
-        uint256 remaining = getWithdrawBalance(_kind);
-        require(remaining > 0, "None left to withdraw...");
+    // function getAuthentication(address _addr) external view returns (uint8) {
+    //     require(_addr != address(0), "Invalid input address...");
+    //     return _isCreator[_addr];
+    // }
 
-        customizedTransfer(payable(msg.sender), remaining, _kind);
+    // function getAuctionState(uint256 _tokenId) public view returns (AuctionState) {
+    //     if (!_allSaleInfo[_tokenId]._isOnSale) return AuctionState.CANCELLED;
+    //     if (_allSaleInfo[_tokenId].interval == 0) return AuctionState.DIRECT_BUY;
+    //     if (block.timestamp >= _allSaleInfo[_tokenId].startTime + _allSaleInfo[_tokenId].interval) return AuctionState.ENDED;
+    //     return AuctionState.OPEN;
+    // } 
+
+    function getSaleInfo(uint256 _tokenId) public view returns (SaleInfo memory) {
+        require(_tokenIdExists[_tokenId], "Non-Existing NFT hash value....");
+
+        return _allSaleInfo[_tokenId];
     }
 
-    receive() payable external {
+    // function getWithdrawBalance(uint8 _kind) public view returns (uint256) {
+    //     require(_kind >= 0, "Invalid cryptocurrency...");
 
+    //     if (_kind == 0) {
+    //       return address(this).balance;
+    //     } else {
+    //       return yen.balanceOf(address(this));
+    //     }
+    // }
+
+    // function setOwner(address payable _newOwner) external onlyOwner {
+    //     require(_newOwner != address(0), "Invalid input address...");
+    //     mkOwner = _newOwner;
+    //     transferOwnership(mkOwner);
+    // }
+
+    // function setAuthentication(address _addr, uint8 _flag) external onlyOwner {
+    //     require(_addr != address(0), "Invalid input address...");
+    //     _isCreator[_addr] = _flag;
+    // }
+
+    // function setMintingFee(address _creater, uint256 _amount) external onlyOwner {
+    //     require(_creater != address(0), "Invalid input address...");
+    //     require(_amount >= 0, "Too small amount");
+    //     _mintingFees[_creater] = _amount;
+    // }
+
+    // function setSellingFee(address _seller, uint24 _ratio) external onlyOwner {
+    //     require(_seller != address(0), "Invalid input address...");
+    //     require(_ratio >= 0, "Too small ratio");
+    //     require(_ratio < 100, "Too large ratio");
+    //     _sellingRatio[_seller] = _ratio;
+    // }
+
+    function setSaleFee(uint256 _fee) external onlyOwner {
+        require(_fee >= 0, "saleFee should be over 0%");
+        require(_fee < 100, "saleFee should be less than 100%");
+        saleFee = _fee;
     }
 
-    fallback() payable external {
-
+    function setRoyaltyFee(uint256 _fee) external onlyOwner {
+        require(_fee >= 0, "royaltyFee should be over 0%");
+        require(_fee < 100, "royaltyFee should be less than 100%");
+        royaltyFee = _fee;
     }
 
-    event PlaceBid(address bidder, uint bid);
-    event PerformBid(address nftSeller, address nftBuyer, uint256 amount);
-    event DestroySale(string tokenHash);
-    // event Withdraw(address to, uint256 amount, uint8 kind);
-    // event WithdrawAll(address to, uint8 kind);
+
+    // function withDraw(uint256 _amount, uint8 _kind) external onlyOwner {
+    //     require(_amount > 0, "Invalid withdraw amount...");
+    //     require(_kind >= 0, "Invalid cryptocurrency...");
+    //     require(getWithdrawBalance(_kind) > _amount, "None left to withdraw...");
+
+    //     yen.transfer(msg.sender, _amount);
+    // }
+
+    // function withDrawAll(uint8 _kind) external onlyOwner {
+    //     require(_kind >= 0, "Invalid cryptocurrency...");
+    //     uint256 remaining = getWithdrawBalance(_kind);
+    //     require(remaining > 0, "None left to withdraw...");
+
+    //     yen.transfer(msg.sender, remaining);
+    // }
+
+    // receive() payable external {
+    // }
+
+    // fallback() payable external {
+    // }
+
+    function onERC721Received(
+        address,
+        address from,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        require(from == address(0x0), "Cannot send tokens to Lord directly");
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
