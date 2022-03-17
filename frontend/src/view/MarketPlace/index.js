@@ -1,9 +1,9 @@
 import React from 'react';
 import './style.css';
 import Backbutton from "../../assest/Style/Backbutton";
-import ButtonBuy from "../../assest/Style/Navbutton";
+import ButtonLink from "../../assest/Style/ButtonLink";
+import ButtonNav from "../../assest/Style/Navbutton";
 import ConnectButton from "../../assest/Style/ConnectButton";
-import CardBank from "../bank/component/Card";
 import CardMerchant from "./component/CardMerchant";
 import CardMarket from "./component/CardMerchant";
 import NavbarSelector from "./component/Navbar";
@@ -17,14 +17,10 @@ const MarcketPlace = () =>{
                         <Backbutton link={'/'} />
                     </div>
                     <div className={'col-4 text-center'}>
-                        <ButtonBuy link={'/'} text={'Marketplace'} />
+                        <ButtonNav link={'/'} text={'Marketplace'} />
                     </div>
-                    <div className={'col-2 text-center'}>
-
-                        <ConnectButton link={'/mynft'} text={'my nft'} />
-                    </div>
-                    <div className={'col-3 text-center'}>
-
+                    <div className={'col-4 text-center'}>
+                        <ButtonLink link={'/mynft'} text={'my nft'} />
                         <ConnectButton link={'/'} text={'connect wallet'} />
                     </div>
 

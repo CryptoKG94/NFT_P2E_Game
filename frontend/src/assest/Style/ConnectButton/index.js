@@ -13,13 +13,13 @@ const ConnectButton = () => {
     return (<>
         {
             !account ?
-                <Button onClick={
+                <Link to={'#'} onClick={
                     !active ? () => activate(injected) : null
                 } className={'connectButton'}>
                     Connect Wallet
-                </Button>
+                </Link>
                 :
-                <Button onClick={
+                <Link to={'#'} onClick={
                     active ? () => deactivate() : null
                 } className={'connectButton'}>
                     {account &&
@@ -27,7 +27,7 @@ const ConnectButton = () => {
                             account.length - 4,
                             account.length
                         )}`}
-                </Button>
+                </Link>
         }
     </>)
 }

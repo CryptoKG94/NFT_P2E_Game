@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import Backbutton from "../../assest/Style/Backbutton";
-import ButtonBuy from "../../assest/Style/Navbutton";
+import ButtonNav from "../../assest/Style/Navbutton";
+import ButtonBuy from "../../assest/Style/ButtonBuy";
 import ConnectButton from "../../assest/Style/ConnectButton";
 import RoninImg from '../../assest/images/6_ronin.png';
 import SamImg from '../../assest/images/6_sam.png';
 import { mintNFT, getNFTInfo } from '../../store/actions/thunks';
-import { Button } from '@mui/material';
+// import { Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js'
@@ -365,9 +366,7 @@ const Stake = () => {
                         <Backbutton link={'/'} />
                     </div>
                     <div className={'col-4 text-center'}>
-                        <Button className="buttonBuy" disabled={tabStatus == STAKETAB ? true : false} onClick={handleStake}>
-                            {isApproved ? 'STAKE' : 'APPROVE'}
-                        </Button>
+                        <ButtonNav disabled={tabStatus == STAKETAB ? true : false} func={handleStake} text={isApproved ? 'STAKE' : 'APPROVE'}/>
                     </div>
                     <div className={'col-4 text-center'}>
                         <ConnectButton />
@@ -382,12 +381,8 @@ const Stake = () => {
                         <div className={tabStatus == UNSTAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStack - 30</div>
                     </div>
                     <div className={'d-flex justify-content-center align-items-center'}>
-                        <Button className="buttonBuy" disabled={tabStatus != STAKETAB ? true : false} onClick={onClickBuyYen}>
-                            Claim YEN
-                        </Button>
-                        <Button className="buttonBuy" disabled={tabStatus != STAKETAB ? true : false} onClick={handleUnStake}>
-                            Claim YEN & Unstake
-                        </Button>
+                        <ButtonBuy disabled={tabStatus != STAKETAB ? true : false} func={onClickBuyYen} text={'Claim YEN'} />
+                        <ButtonBuy disabled={tabStatus != STAKETAB ? true : false} func={handleUnStake} text={'Claim YEN & Unstake'} />
                     </div>
 
                 </div>

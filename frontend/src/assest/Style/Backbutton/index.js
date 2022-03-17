@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 
 const Backbutton = ({text,link}) =>{
     return(<>
-        <Link to={link} className={'buttonBack'}>
+        <Link to={link} className={'buttonBack_'}>
             <img width={50} src={Img} alt={'/#'}/>
         </Link>
     </>)

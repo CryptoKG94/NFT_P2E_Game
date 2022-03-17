@@ -1,12 +1,12 @@
-.connectButton{
+.buttonLink{
     background: red;
     color: white;
     font-size: 1.7rem;
-    padding: .4rem 1.2rem;
+    padding: .4rem 1.9rem;
     text-decoration: none;
-    font-weight: lighter!important;
     list-style: none;
-    border: 2px solid black;
-    border-radius: 6px;
+    border: 3px solid black;
+    border-radius: 9px;
     text-transform: uppercase;
 }
+
