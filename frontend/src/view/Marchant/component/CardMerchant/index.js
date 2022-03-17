@@ -1,9 +1,10 @@
 import React from 'react';
+import { Paper, Button, Tabs, Box, Grid, FormControl, OutlinedInput, InputAdornment, Typography } from "@material-ui/core";
 import './style.css';
-import Img from '../../../../assest/images/img1.png'
 
 
-const CardMerchant = ({merchant}) =>{
+const CardMerchant = ({merchant, modalButton}) =>{
+    console.log("merchant:", merchant);
     return(
         <div className = {'CardMerchant col-lg-4 col-md-4 col-sm-6 col-6 mx-auto'} style={{width: "300px"}}>
             <div className={'CardMarchantLogo'}>
@@ -21,7 +22,10 @@ const CardMerchant = ({merchant}) =>{
                 <div>
                     {'Price: ' + merchant.price+'YEN'}
                 </div>
-                <div>buy now</div>
+                {modalButton[merchant.id]}
+                {/* <Button variant="text" onClick={handleBuyPortions}>
+                    buy now
+                </Button> */}
             </div>
         </div>
     );

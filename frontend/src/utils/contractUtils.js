@@ -12,7 +12,7 @@ const YenContract = require("../contracts/YENContract.json");
 const YenContractABI = YenContract["abi"];
 
 // MCB
-
+// import { ethers } from "ethers";
 //
 
 let walletProvider = null;
@@ -303,6 +303,7 @@ export const isApprovedForAll = async (provider, account) => {
     }
 }
 
+
 export const withdraw = async (provider) => {
 
     const web3 = new Web3(provider);
@@ -322,6 +323,106 @@ export const withdraw = async (provider) => {
 
 // MCB
 
+export const buyPortions = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
+
+    try {
+        console.log("buy portions");
+        let res = await lordContract.methods.buyPortions(1).send({ from: account });
+        return {
+            success: true,
+            status: true
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const buyCrossbows = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
+
+    try {
+        console.log("buy crossbow");
+        let res = await lordContract.methods.buyCrossBows(1, true).send({ from: account });
+        return {
+            success: true,
+            status: true
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const buyShields = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
+
+    try {
+        console.log("buy shield");
+        let res = await snrContract.methods.buyShields(1).send({ from: account });
+        return {
+            success: true,
+            status: true
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const setApprovalForYEN = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
+
+    try {
+        await yenContract.methods.approve(Constants.LordAddress,web3.utils.fromWei("1000000000"));
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: "fail"
+        }
+    }
+}
+
+export const isApprovedForYEN = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
+
+    try {
+        let res = await yenContract.allowance(account, Constants.LordAddress);
+        if (res > 0) {
+            return {
+                success: true,
+                status: true
+            }
+        } else {
+            return {
+                success: false,
+                status: true
+            }
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
 //
 
 const ContractUtils = {
@@ -330,6 +431,14 @@ const ContractUtils = {
     getAssetInfo,
     getNFTPrice,
     withdraw,
+
+// MCB
+    buyPortions,
+    buyCrossbows,
+    buyShields,
+    isApprovedForYEN,
+    setApprovalForYEN,
+//
 
     fetchStakingReward,
     fetchStakedInfo,
