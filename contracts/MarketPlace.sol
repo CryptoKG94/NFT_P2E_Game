@@ -185,57 +185,11 @@ contract MarketPlace is Ownable, IERC721Receiver {
         return true;
     }
 
-    // function getAuthentication(address _addr) external view returns (uint8) {
-    //     require(_addr != address(0), "Invalid input address...");
-    //     return _isCreator[_addr];
-    // }
-
-    // function getAuctionState(uint256 _tokenId) public view returns (AuctionState) {
-    //     if (!_allSaleInfo[_tokenId]._isOnSale) return AuctionState.CANCELLED;
-    //     if (_allSaleInfo[_tokenId].interval == 0) return AuctionState.DIRECT_BUY;
-    //     if (block.timestamp >= _allSaleInfo[_tokenId].startTime + _allSaleInfo[_tokenId].interval) return AuctionState.ENDED;
-    //     return AuctionState.OPEN;
-    // } 
-
     function getSaleInfo(uint256 _tokenId) public view returns (SaleInfo memory) {
         require(_tokenIdExists[_tokenId], "Non-Existing NFT hash value....");
 
         return _allSaleInfo[_tokenId];
     }
-
-    // function getWithdrawBalance(uint8 _kind) public view returns (uint256) {
-    //     require(_kind >= 0, "Invalid cryptocurrency...");
-
-    //     if (_kind == 0) {
-    //       return address(this).balance;
-    //     } else {
-    //       return yen.balanceOf(address(this));
-    //     }
-    // }
-
-    // function setOwner(address payable _newOwner) external onlyOwner {
-    //     require(_newOwner != address(0), "Invalid input address...");
-    //     mkOwner = _newOwner;
-    //     transferOwnership(mkOwner);
-    // }
-
-    // function setAuthentication(address _addr, uint8 _flag) external onlyOwner {
-    //     require(_addr != address(0), "Invalid input address...");
-    //     _isCreator[_addr] = _flag;
-    // }
-
-    // function setMintingFee(address _creater, uint256 _amount) external onlyOwner {
-    //     require(_creater != address(0), "Invalid input address...");
-    //     require(_amount >= 0, "Too small amount");
-    //     _mintingFees[_creater] = _amount;
-    // }
-
-    // function setSellingFee(address _seller, uint24 _ratio) external onlyOwner {
-    //     require(_seller != address(0), "Invalid input address...");
-    //     require(_ratio >= 0, "Too small ratio");
-    //     require(_ratio < 100, "Too large ratio");
-    //     _sellingRatio[_seller] = _ratio;
-    // }
 
     function setSaleFee(uint256 _fee) external onlyOwner {
         require(_fee >= 0, "saleFee should be over 0%");
@@ -249,28 +203,6 @@ contract MarketPlace is Ownable, IERC721Receiver {
         royaltyFee = _fee;
     }
 
-
-    // function withDraw(uint256 _amount, uint8 _kind) external onlyOwner {
-    //     require(_amount > 0, "Invalid withdraw amount...");
-    //     require(_kind >= 0, "Invalid cryptocurrency...");
-    //     require(getWithdrawBalance(_kind) > _amount, "None left to withdraw...");
-
-    //     yen.transfer(msg.sender, _amount);
-    // }
-
-    // function withDrawAll(uint8 _kind) external onlyOwner {
-    //     require(_kind >= 0, "Invalid cryptocurrency...");
-    //     uint256 remaining = getWithdrawBalance(_kind);
-    //     require(remaining > 0, "None left to withdraw...");
-
-    //     yen.transfer(msg.sender, remaining);
-    // }
-
-    // receive() payable external {
-    // }
-
-    // fallback() payable external {
-    // }
 
     function onERC721Received(
         address,
