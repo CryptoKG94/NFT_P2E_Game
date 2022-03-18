@@ -2,26 +2,24 @@ import { getType } from 'typesafe-actions';
 import * as actions from '../actions';
 import { initEntityState, entityLoadingStarted, entityLoadingSucceeded, entityLoadingFailed } from '../utils';
 
-const initZombieInfo = {
+const initMintInfo = {
     price: 0,
-    genType: 0,
-    total: 0,
-    remain: 0
+    mintCount: 0
 }
 
 export const defaultState = {
-    zombieInfo: initEntityState(initZombieInfo),
+    mintInfo: initEntityState(initMintInfo),
 };
 
 const states = (state = defaultState, action) => {
     switch (action.type) {
 
-        case getType(actions.getZombieInfo.request):
-            return { ...state, zombieInfo: entityLoadingStarted(state.zombieInfo, action.payload) };
-        case getType(actions.getZombieInfo.success):
-            return { ...state, zombieInfo: entityLoadingSucceeded(state.zombieInfo, action.payload) };
-        case getType(actions.getZombieInfo.failure):
-            return { ...state, zombieInfo: entityLoadingFailed(state.zombieInfo) };
+        case getType(actions.getNFTInfo.request):
+            return { ...state, mintInfo: entityLoadingStarted(state.mintInfo, action.payload) };
+        case getType(actions.getNFTInfo.success):
+            return { ...state, mintInfo: entityLoadingSucceeded(state.mintInfo, action.payload) };
+        case getType(actions.getNFTInfo.failure):
+            return { ...state, mintInfo: entityLoadingFailed(state.mintInfo) };
 
         default:
             return state;

@@ -1,17 +1,17 @@
 import ContractUtils from '../../../utils/contractUtils';
 import * as actions from '../../actions';
 
-export const getNFTInfo = () => async (dispatch) => {
+export const getNFTInfo = (provider) => async (dispatch) => {
 
-  dispatch(actions.getZombieInfo.request(true));
+  dispatch(actions.getNFTInfo.request(true));
   try {
-    const zombiePrice = await ContractUtils.getNFTPrice();
-    if (zombiePrice.success) {
-      dispatch(actions.getZombieInfo.success(zombiePrice.status));
+    const nftInfo = await ContractUtils.getMintInfo(provider);
+    if (nftInfo.success ) {
+      dispatch(actions.getNFTInfo.success(nftInfo.status));
     } else {
-      dispatch(actions.getZombieInfo.failure(zombiePrice.status));
+      dispatch(actions.getNFTInfo.failure(nftInfo.status));
     }
   } catch (err) {
-    dispatch(actions.getZombieInfo.failure(err));
+    dispatch(actions.getNFTInfo.failure(err));
   }
 };

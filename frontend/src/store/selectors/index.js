@@ -1,2 +1,2 @@
 
-export const zomibeInfo = (state) => state.recruit.zombieInfo;
+export const mintInfo = (state) => state.recruit.mintInfo;

@@ -12,11 +12,13 @@ import ContractUtils from '../../utils/contractUtils';
 import { useHistory } from 'react-router-dom';
 import { SUCCESS, WARNNING } from '../../utils/Constants';
 import Toast from '../../components/Toast';
+import Loading from '../../components/Loading';
 
 const initNFTInfo = {
     balance: new BigNumber(0),
     tokenIds: [],
-    metadatas: [],
+    saleInfo: [],
+    nftInfo: []
 }
 
 const MarcketPlace = () => {
@@ -28,6 +30,7 @@ const MarcketPlace = () => {
     const [isApprovedForYen, setIsApprovedForYen] = useState(false);
     const [nftInfo, setNFTInfo] = useState();
     const [fetchFlag, setFetchFlag] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const history = useHistory();
 
@@ -36,13 +39,15 @@ const MarcketPlace = () => {
     }
 
 
-    useEffect(() => {
+    useEffect(async () => {
         if (fetchFlag && account) {
             console.log('fetchFlag:  TRUE');
-            fetchIsApprovedForAll();
-            fetchIsApprovedForYen();
-            fetchNFTInfo();
-            setFetchFlag(false)
+            setLoading(true);
+            await fetchIsApprovedForAll();
+            await fetchIsApprovedForYen();
+            await fetchNFTInfo();
+            setFetchFlag(false);
+            setLoading(false);
         }
     }, [account, fetchFlag])
 
@@ -65,7 +70,8 @@ const MarcketPlace = () => {
             if (res.success) {
                 nfts.balance = res.status.balances;
                 nfts.tokenIds = res.status.tokenIds.slice();
-                nfts.metadatas = res.status.metadatas.slice();
+                nfts.saleInfo = res.status.saleInfo.slice();
+                nfts.nftInfo = res.status.nftInfo.slice();
                 setNFTInfo(nfts);
             }
         }
@@ -161,16 +167,29 @@ const MarcketPlace = () => {
                 <div className={'row'}>
                     {
                         nftInfo && nftInfo.tokenIds && nftInfo.tokenIds.map((tokenId, idx) => {
-                            const item = nftInfo.metadatas[idx];
+                            const nft = nftInfo.nftInfo[idx];
+                            const saleInfo = nftInfo.saleInfo[idx];
+                            const isOwner = saleInfo.currentOwner == account;
                             return (
                                 <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
-                                    <CardMarket nft={item} tokenId={tokenId} destroy={handleDestroySale} auction={handleAuction} confirm={handleConfirm} isApprovedForYen={isApprovedForYen} />
+                                    <CardMarket
+                                        isOwner={isOwner}
+                                        saleInfo={saleInfo}
+                                        nftInfo={nft}
+                                        tokenId={tokenId}
+                                        destroy={handleDestroySale}
+                                        auction={handleAuction}
+                                        confirm={handleConfirm}
+                                        isApprovedForYen={isApprovedForYen} />
                                 </div>
                             )
                         })
                     }
                 </div>
             </div>
+            <Loading
+                open={loading}
+            />
             <Toast
                 open={showToast}
                 message={toastMessage}

@@ -52,17 +52,39 @@ export const setupNetwork = async () => {
     }
 }
 
-export const getNFTPrice = async (provider, address) => {
+export const getMintInfo = async (provider) => {
 
     try {
-        const web3 = new Web3(provider);
-        let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
+        if (!provider) {
+            if (window.ethereum) {
+                const web3 = new Web3(window.ethereum);
+                let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress);
+                let price = await contract.methods.MINT_PRICE().call();
+                let minted = await contract.methods.minted().call();
 
-        let price = await contract.methods.MINT_PRICE().call();
+                let data = {
+                    price: web3.utils.fromWei("" + price),
+                    mintCount: minted
+                }
+                return {
+                    success: true,
+                    status: data
+                }
+            }
+        } else {
+            const web3 = new Web3(provider);
+            let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress);
+            let price = await contract.methods.MINT_PRICE().call();
+            let minted = await contract.methods.minted().call();
 
-        return {
-            success: true,
-            status: web3.utils.fromWei("" + price)
+            let data = {
+                price: price,
+                mintCount: minted
+            }
+            return {
+                success: true,
+                status: data
+            }
         }
 
     } catch (err) {
@@ -227,7 +249,7 @@ export const fetchStakedInfo = async (provider, account) => {
             status: data
         }
 
-    } catch(err) {
+    } catch (err) {
         return {
             success: false,
             status: err.message
@@ -240,7 +262,7 @@ export const setApprovalForAllToStake = async (provider, account) => {
     let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
 
     try {
-        await snrContract.methods.setApprovalForAll(Constants.LordAddress, true).send({from: account});
+        await snrContract.methods.setApprovalForAll(Constants.LordAddress, true).send({ from: account });
         return {
             success: true,
             status: "success"
@@ -258,12 +280,12 @@ export const stake = async (provider, account, tokenIds) => {
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress)
 
     try {
-        await lordContract.methods.addManyToLord(account, tokenIds).send({from: account});
+        await lordContract.methods.addManyToLord(account, tokenIds).send({ from: account });
         return {
             success: true,
-            status: "success" 
+            status: "success"
         }
-    } catch(err) {
+    } catch (err) {
         return {
             success: false,
             status: err.message
@@ -276,12 +298,12 @@ export const unStake = async (provider, account, tokenIds, isUnstake) => {
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress)
 
     try {
-        await lordContract.methods.claimManyFromLord(tokenIds, isUnstake).send({from: account});
+        await lordContract.methods.claimManyFromLord(tokenIds, isUnstake).send({ from: account });
         return {
             success: true,
-            status: "success" 
+            status: "success"
         }
-    } catch(err) {
+    } catch (err) {
         return {
             success: false,
             status: err.message
@@ -334,7 +356,7 @@ export const setApprovalForAllToMarket = async (provider, account) => {
     let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
 
     try {
-        await snrContract.methods.setApprovalForAll(Constants.MarketPlaceAddress, true).send({from: account});
+        await snrContract.methods.setApprovalForAll(Constants.MarketPlaceAddress, true).send({ from: account });
         return {
             success: true,
             status: "success"
@@ -352,14 +374,14 @@ export const onSale = async (provider, account, tokenId, startPrice) => {
     let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
 
     try {
-        let price = new BigNumber(startPrice)
+        let price = new BigNumber(web3.utils.toWei("" + startPrice));
         console.log('[kg] => price: ', price);
-        await contract.methods.createSale(tokenId, price).send({from: account});
+        await contract.methods.createSale(tokenId, price).send({ from: account });
         return {
             success: true,
             status: "success"
         }
-    } catch(err) {
+    } catch (err) {
         return {
             success: false,
             status: err.message
@@ -377,16 +399,20 @@ export const fetchMarketplaceInfo = async (provider) => {
         let data = {
             balances: 0,
             tokenIds: [],
-            metadatas: []
+            saleInfo: [],
+            nftInfo: []
         }
 
         const balance = await contract.methods.balanceOf(Constants.MarketPlaceAddress).call()
 
         for (let i = 0; i < balance; i++) {
             const tokenId = await contract.methods.tokenOfOwnerByIndex(Constants.MarketPlaceAddress, i).call()
-            const dataInfo = await marketplaceContract.methods.getSaleInfo(tokenId).call()
+            const nftInfo = await contract.methods.tokenTraits(tokenId).call()
+            let saleInfo = await marketplaceContract.methods.getSaleInfo(tokenId).call()
+
             data.tokenIds.push(tokenId);
-            data.metadatas.push(dataInfo);
+            data.nftInfo.push(nftInfo);
+            data.saleInfo.push(saleInfo);
         }
         data.balances = balance;
         return {
@@ -406,12 +432,12 @@ export const destroySale = async (provider, account, tokenId) => {
     let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
 
     try {
-        await contract.methods.destroySale(tokenId).send({from: account});
+        await contract.methods.destroySale(tokenId).send({ from: account });
         return {
             success: true,
             status: "success"
         }
-    } catch(err) {
+    } catch (err) {
         return {
             success: false,
             status: err.message
@@ -425,12 +451,12 @@ export const auction = async (provider, account, tokenId, bidPrice) => {
 
     try {
         let price = new BigNumber(web3.utils.toWei("" + bidPrice));
-        await contract.methods.placeBid(tokenId, price).send({from: account});
+        await contract.methods.placeBid(tokenId, price).send({ from: account });
         return {
             success: true,
             status: "success"
         }
-    } catch(err) {
+    } catch (err) {
         return {
             success: false,
             status: err.message
@@ -443,12 +469,12 @@ export const confirm = async (provider, account, tokenId) => {
     let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
 
     try {
-        await contract.methods.confirm(tokenId).send({from: account});
+        await contract.methods.performBid(tokenId).send({ from: account });
         return {
             success: true,
             status: "success"
         }
-    } catch(err) {
+    } catch (err) {
         return {
             success: false,
             status: err.message
@@ -479,7 +505,7 @@ export const setApprovalForYENToMarketplace = async (provider, account) => {
     let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
 
     try {
-        await yenContract.methods.approve(Constants.MarketPlaceAddress, web3.utils.toWei("1000000000")).send({from: account});
+        await yenContract.methods.approve(Constants.MarketPlaceAddress, web3.utils.toWei("1000000000")).send({ from: account });
         return {
             success: true,
             status: "success"
@@ -582,7 +608,7 @@ export const setApprovalForYENToStaking = async (provider, account) => {
     let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
 
     try {
-        await yenContract.methods.approve(Constants.LordAddress,web3.utils.fromWei("1000000000")).send({from: account});
+        await yenContract.methods.approve(Constants.LordAddress, web3.utils.fromWei("1000000000")).send({ from: account });
         return {
             success: true,
             status: "success"
@@ -626,16 +652,16 @@ const ContractUtils = {
     getBNBDecimals,
     mintNFT,
     getAssetInfo,
-    getNFTPrice,
+    getMintInfo,
     withdraw,
 
-// MCB
+    // MCB
     buyPortions,
     buyCrossbows,
     buyShields,
     isApprovedForYENToStaking,
     setApprovalForYENToStaking,
-//
+    //
 
     fetchStakingReward,
     fetchStakedInfo,

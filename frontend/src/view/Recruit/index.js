@@ -8,18 +8,22 @@ import Img1 from '../../assest/images/img2.png'
 import { useDispatch, useSelector } from 'react-redux';
 import * as selectors from '../../store/selectors';
 import { useWeb3React } from '@web3-react/core';
-import { mintNFT, getNFTInfo } from '../../store/actions/thunks';
+import { getNFTInfo } from '../../store/actions/thunks';
 import Toast from '../../components/Toast';
+import Loading from '../../components/Loading';
 import ContractUtils from '../../utils/contractUtils';
 
 const Recruit = () => {
     const dispatch = useDispatch();
-    const nftInfo = useSelector(selectors.zomibeInfo);
+    const mintInfo = useSelector(selectors.mintInfo);
+    console.log('[kg] => mintInfo: ', mintInfo);
     const { account, library } = useWeb3React();
     const [mintAmount, setMintAmount] = useState(0);
     const [showToast, setShowToast] = useState(false)
     const [toastMessage, setToastMessage] = useState("")
     const [toastType, setToastType] = useState(2) //1: success, 2: error
+    const [loading, setLoading] = useState(false);
+    const [fetchFlag, setFetchFlag] = useState(true);
 
     const handleChangeAmount = (e) => {
         setMintAmount(Number(e.target.value));
@@ -54,11 +58,14 @@ const Recruit = () => {
             return;
         }
 
+        // setLoading(true);
         const res = await ContractUtils.mintNFT(library, account, mintAmount);
+        // setLoading(false);
         if (res.success) {
             setShowToast(true)
             setToastType(1)
             setToastMessage("Minted Successfully!");
+            setFetchFlag(true);
         } else {
             setShowToast(true);
             setToastMessage(res.status);
@@ -71,8 +78,11 @@ const Recruit = () => {
     }
 
     useEffect(() => {
-        dispatch(getNFTInfo());
-    }, []);
+        if (fetchFlag) {
+            dispatch(getNFTInfo(library));
+            setFetchFlag(false);
+        }
+    }, [fetchFlag]);
 
     return (<>
         <div className={'recruit '}>
@@ -82,7 +92,7 @@ const Recruit = () => {
                         <Backbutton link={'/'} />
                     </div>
                     <div className={'col-4 text-center'}>
-                        <ButtonBuy func={onClickMint} text={'Recruit'}/>
+                        <ButtonBuy func={onClickMint} text={'Recruit'} />
                     </div>
                     <div className={'col-4 text-center'}>
                         <ConnectButton />
@@ -111,22 +121,15 @@ const Recruit = () => {
                         </div>
 
                         <div className={'genMintue'}>
-                            0 / 3000 mintue
+                            {`${mintInfo && mintInfo.data ? mintInfo.data.mintCount : '-'} / 3000 mintue`}
                             <br />
 
                             {account ? (
-                                <>
-                                <input type={'number'} 
-                                className={'InputCheck'} 
-                                onChange={handleChangeAmount}
-                                value={mintAmount}
-                                />
                                 <div className={'bouttonChecher'}>
                                     <div className={'ButtonCheck'} onClick={decreaseValue}>-</div>
                                     <div className={'ButtonCheck'} onClick={onClickMint}>{`Mint ${mintAmount} nft`}</div>
                                     <div className={'ButtonCheck'} onClick={increaseValue}>+</div>
                                 </div>
-                                </>
                             ) : `Connect your wallet first`}
                         </div>
 
@@ -138,6 +141,9 @@ const Recruit = () => {
                 </div>
             </div>
         </div>
+        <Loading
+            open={loading}
+        />
         <Toast
             open={showToast}
             message={toastMessage}

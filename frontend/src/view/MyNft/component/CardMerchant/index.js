@@ -21,16 +21,9 @@ const CardMarket = (props) => {
             </div>
             <div className={''}>
                 <div className={'sumari'}>
-                    Samurai #1125
+                    {`${nft.isRonin ? 'Ronin' : 'Samurai'} ${tokenId}`}
                 </div>
             </div>
-            <div className={'highOffer'}>
-                <div className={'priceOffer'}>$30<span className={'spanOffer'}>(highest offer)</span></div>
-                <div>$125</div>
-            </div>
-            {/* <button type='button' onClick={handleOnSale} className='btn btn-danger buttonSale'>
-                On Sale
-            </button> */}
             <div className='button-group'>
                 <input type={'number'}
                     className={'InputCheck'}

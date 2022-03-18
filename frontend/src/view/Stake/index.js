@@ -14,6 +14,7 @@ import BigNumber from 'bignumber.js'
 import ContractUtils from '../../utils/contractUtils';
 import { getFullDisplayBalance } from '../../components/formatBalance';
 import Toast from '../../components/Toast';
+import Loading from '../../components/Loading';
 import { SUCCESS, WARNNING } from '../../utils/Constants';
 
 const STAKETAB = 1;
@@ -54,19 +55,22 @@ const Stake = () => {
     const [selectedStakedTokenIds, setSelectedStakedTokenIds] = useState([]);
     const [roninAllSelected, setRoninAllSelected] = useState(false);
     const [samAllSelected, setSamAllSelected] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const fetchIsApprovedForAll = async () => {
         const isApp = await ContractUtils.isApprovedForAllToStake(library, account);
         setIsApproved(isApp.success);
     }
 
-    useEffect(() => {
+    useEffect(async () => {
         if (fetchFlag && account) {
             console.log('fetchFlag:  TRUE')
-            fetchIsApprovedForAll()
-            fetchUnStakedInfo()
-            fetchStakedInfo()
+            setLoading(true);
+            await fetchIsApprovedForAll()
+            await fetchUnStakedInfo()
+            await fetchStakedInfo()
             setFetchFlag(false)
+            setLoading(false);
         }
         if (account) fetchReward()
     }, [account, fetchFlag])
@@ -446,6 +450,9 @@ const Stake = () => {
                 </div>
             </div>
         </div>
+        <Loading
+            open={loading}
+        />
         <Toast
             open={showToast}
             message={toastMessage}
