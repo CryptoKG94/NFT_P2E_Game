@@ -8,6 +8,7 @@ const CardMarket = (props) => {
     const destroy = props.destroy;
     const auction = props.auction;
     const confirm = props.confirm;
+    const isApprovedForYen = props.isApprovedForYen;
 
     const [bidPrice, setBidPrice] = useState(0);
     const handleChangeAmount = (e) => {
@@ -35,7 +36,7 @@ const CardMarket = (props) => {
                     onChange={handleChangeAmount}
                     value={bidPrice}
                 />
-                <ButtonBuy func={() => auction(tokenId, bidPrice)} text={'Offer'} />
+                <ButtonBuy func={() => auction(tokenId, bidPrice)} text={!isApprovedForYen ? 'Approve Yen' : 'Offer'} />
             </div>
             <div className="button-group mt-2">
                 <ButtonBuy func={() => confirm(tokenId)} text={'Confirm'} />

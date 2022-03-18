@@ -25,6 +25,7 @@ const MarcketPlace = () => {
     const [toastMessage, setToastMessage] = useState("")
     const [toastType, setToastType] = useState(2) //1: success, 2: error
     const [isApproved, setIsApproved] = useState(false);
+    const [isApprovedForYen, setIsApprovedForYen] = useState(false);
     const [nftInfo, setNFTInfo] = useState();
     const [fetchFlag, setFetchFlag] = useState(true);
 
@@ -37,9 +38,10 @@ const MarcketPlace = () => {
 
     useEffect(() => {
         if (fetchFlag && account) {
-            console.log('fetchFlag:  TRUE')
-            fetchIsApprovedForAll()
-            fetchNFTInfo()
+            console.log('fetchFlag:  TRUE');
+            fetchIsApprovedForAll();
+            fetchIsApprovedForYen();
+            fetchNFTInfo();
             setFetchFlag(false)
         }
     }, [account, fetchFlag])
@@ -47,6 +49,11 @@ const MarcketPlace = () => {
     const fetchIsApprovedForAll = async () => {
         const isApp = await ContractUtils.isApprovedForAllToMarket(library, account);
         setIsApproved(isApp.success);
+    }
+
+    const fetchIsApprovedForYen = async () => {
+        const isApp = await ContractUtils.isApprovedForYENToMarketplace(library, account);
+        setIsApprovedForYen(isApp.success);
     }
 
     const fetchNFTInfo = async () => {
@@ -69,6 +76,7 @@ const MarcketPlace = () => {
             const res = await ContractUtils.destroySale(library, account, tokenId);
             if (res.success) {
                 onToastOpen(SUCCESS, "Destroy sale Successfully!");
+                setFetchFlag(true);
             } else {
                 onToastOpen(WARNNING, res.status);
             }
@@ -76,10 +84,19 @@ const MarcketPlace = () => {
     }
 
     const handleAuction = async (tokenId, bidPrice) => {
-        if (account) {
+        if (!account) {
+            onToastOpen(WARNNING, "Please connect wallet");
+            return;
+        }
+
+        if (!isApprovedForYen) {
+            const res = await ContractUtils.setApprovalForYENToMarketplace(library, account);
+            setIsApprovedForYen(res.success);
+        } else {
             const res = await ContractUtils.auction(library, account, tokenId, bidPrice);
             if (res.success) {
                 onToastOpen(SUCCESS, "Auction Successfully!");
+                setFetchFlag(true);
             } else {
                 onToastOpen(WARNNING, res.status);
             }
@@ -91,6 +108,7 @@ const MarcketPlace = () => {
             const res = await ContractUtils.confirm(library, account, tokenId);
             if (res.success) {
                 onToastOpen(SUCCESS, "Saled Successfully!");
+                setFetchFlag(true);
             } else {
                 onToastOpen(WARNNING, res.status);
             }
@@ -146,7 +164,7 @@ const MarcketPlace = () => {
                             const item = nftInfo.metadatas[idx];
                             return (
                                 <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
-                                    <CardMarket nft={item} tokenId={tokenId} destroy={handleDestroySale} auction={handleAuction} confirm={handleConfirm} />
+                                    <CardMarket nft={item} tokenId={tokenId} destroy={handleDestroySale} auction={handleAuction} confirm={handleConfirm} isApprovedForYen={isApprovedForYen} />
                                 </div>
                             )
                         })

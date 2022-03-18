@@ -43,15 +43,15 @@ const Marchant = () => {
     const [isApproved, setIsApproved] = useState(false)
     const [fetchFlag, setFetchFlag] = useState(true)
 
-    const fetchIsApprovedForYEN = async () => {
-        const isApp = await ContractUtils.isApprovedForYEN(library, account);
+    const fetchisApprovedForYENToStaking = async () => {
+        const isApp = await ContractUtils.isApprovedForYENToStaking(library, account);
         setIsApproved(isApp.success);
     }
 
     useEffect(() => {
         if (fetchFlag && account) {
             console.log('fetchFlag:  TRUE')
-            fetchIsApprovedForYEN()
+            fetchisApprovedForYENToStaking()
             // fetchUnStakedInfo()
             // fetchStakedInfo()
             setFetchFlag(false)
@@ -146,7 +146,7 @@ const Marchant = () => {
     const onSeekApproval = async token => {
         // await dispatch(changeApproval({ address, provider, networkID: chainID }));
         setRequestedApproval(true);
-        await ContractUtils.setApprovalForYEN(library, account);
+        await ContractUtils.setApprovalForYENToStaking(library, account);
         setIsApproved(true);
     };
 

@@ -10,6 +10,9 @@ const CardMarket = (props) => {
     const isApproved = props.isApproved;
 
     const [startPrice, setStartPrice] = useState(0);
+    const handleChangeAmount = (e) => {
+        setStartPrice(Number(e.target.value));
+    }
 
     return (<>
         <div className={'CardMarket'}>
@@ -28,7 +31,14 @@ const CardMarket = (props) => {
             {/* <button type='button' onClick={handleOnSale} className='btn btn-danger buttonSale'>
                 On Sale
             </button> */}
-            <ButtonBuy func={() => handleOnSale(tokenId, startPrice)} text={isApproved ? 'On Sale' : 'Approve'}/>
+            <div className='button-group'>
+                <input type={'number'}
+                    className={'InputCheck'}
+                    onChange={handleChangeAmount}
+                    value={startPrice}
+                />
+                <ButtonBuy func={() => handleOnSale(tokenId, startPrice)} text={isApproved ? 'On Sale' : 'Approve'}/>
+            </div>
 
         </div>
     </>)

@@ -424,8 +424,8 @@ export const auction = async (provider, account, tokenId, bidPrice) => {
     let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
 
     try {
-        let price = new BigNumber(bidPrice);
-        await contract.methods.placeBid(tokenId, bidPrice).send({from: account});
+        let price = new BigNumber(web3.utils.toWei("" + bidPrice));
+        await contract.methods.placeBid(tokenId, price).send({from: account});
         return {
             success: true,
             status: "success"
@@ -473,6 +473,50 @@ export const withdraw = async (provider) => {
         }
     }
 }
+
+export const setApprovalForYENToMarketplace = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
+
+    try {
+        await yenContract.methods.approve(Constants.MarketPlaceAddress, web3.utils.toWei("1000000000")).send({from: account});
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const isApprovedForYENToMarketplace = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
+
+    try {
+        let res = await yenContract.methods.allowance(account, Constants.MarketPlaceAddress).call();
+        if (res > 0) {
+            return {
+                success: true,
+                status: true
+            }
+        } else {
+            return {
+                success: false,
+                status: false
+            }
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
 
 // #region MCB
 
@@ -533,12 +577,12 @@ export const buyShields = async (provider, account) => {
     }
 }
 
-export const setApprovalForYEN = async (provider, account) => {
+export const setApprovalForYENToStaking = async (provider, account) => {
     const web3 = new Web3(provider);
     let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
 
     try {
-        await yenContract.methods.approve(Constants.LordAddress,web3.utils.fromWei("1000000000"));
+        await yenContract.methods.approve(Constants.LordAddress,web3.utils.fromWei("1000000000")).send({from: account});
         return {
             success: true,
             status: "success"
@@ -551,12 +595,12 @@ export const setApprovalForYEN = async (provider, account) => {
     }
 }
 
-export const isApprovedForYEN = async (provider, account) => {
+export const isApprovedForYENToStaking = async (provider, account) => {
     const web3 = new Web3(provider);
     let yenContract = await new web3.eth.Contract(YenContractABI, Constants.YENAddress)
 
     try {
-        let res = await yenContract.allowance(account, Constants.LordAddress);
+        let res = await yenContract.methods.allowance(account, Constants.LordAddress).call();
         if (res > 0) {
             return {
                 success: true,
@@ -589,8 +633,8 @@ const ContractUtils = {
     buyPortions,
     buyCrossbows,
     buyShields,
-    isApprovedForYEN,
-    setApprovalForYEN,
+    isApprovedForYENToStaking,
+    setApprovalForYENToStaking,
 //
 
     fetchStakingReward,
@@ -603,6 +647,8 @@ const ContractUtils = {
 
     setApprovalForAllToMarket,
     isApprovedForAllToMarket,
+    isApprovedForYENToMarketplace,
+    setApprovalForYENToMarketplace,
     onSale,
     fetchMarketplaceInfo,
     destroySale,
