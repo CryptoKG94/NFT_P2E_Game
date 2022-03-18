@@ -123,7 +123,7 @@ const Recruit = () => {
                                 />
                                 <div className={'bouttonChecher'}>
                                     <div className={'ButtonCheck'} onClick={decreaseValue}>-</div>
-                                    <div className={'ButtonCheck'}>{`Mint ${mintAmount} nft`}</div>
+                                    <div className={'ButtonCheck'} onClick={onClickMint}>{`Mint ${mintAmount} nft`}</div>
                                     <div className={'ButtonCheck'} onClick={increaseValue}>+</div>
                                 </div>
                                 </>

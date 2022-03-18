@@ -10,13 +10,14 @@ const LordContract = require("../contracts/LordContract.json");
 const LordContractABI = LordContract["abi"];
 const YenContract = require("../contracts/YENContract.json");
 const YenContractABI = YenContract["abi"];
+const MarketplaceContract = require("../contracts/MarketPlace.json");
+const MarketplaceContractABI = MarketplaceContract["abi"];
 
 // MCB
 // import { ethers } from "ethers";
 //
 
-let walletProvider = null;
-let walletAddress = "";
+//#region mint and init functions
 
 export const getBNBDecimals = () => {
     return 18;
@@ -138,6 +139,9 @@ export const getAssetInfo = async (provider, address) => {
         }
     }
 }
+//#endregion
+
+//#region staking
 
 export const fetchStakingReward = async (provider, account) => {
 
@@ -231,12 +235,12 @@ export const fetchStakedInfo = async (provider, account) => {
     }
 }
 
-export const setApprovalForAll = async (provider, account) => {
+export const setApprovalForAllToStake = async (provider, account) => {
     const web3 = new Web3(provider);
     let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
 
     try {
-        await snrContract.methods.setApprovalForAll(Constants.LordAddress, true);
+        await snrContract.methods.setApprovalForAll(Constants.LordAddress, true).send({from: account});
         return {
             success: true,
             status: "success"
@@ -285,15 +289,15 @@ export const unStake = async (provider, account, tokenIds, isUnstake) => {
     }
 }
 
-export const isApprovedForAll = async (provider, account) => {
+export const isApprovedForAllToStake = async (provider, account) => {
     const web3 = new Web3(provider);
-    let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
+    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress);
 
     try {
-        let res = await lordContract.methods.isApprovedForAll(account, Constants.LordAddress);
+        let res = await contract.methods.isApprovedForAll(account, Constants.LordAddress).call();
         return {
-            success: true,
-            status: true
+            success: res,
+            status: res
         }
     } catch (err) {
         return {
@@ -303,7 +307,156 @@ export const isApprovedForAll = async (provider, account) => {
     }
 }
 
+//#endregion
 
+//#region marketplace
+
+export const isApprovedForAllToMarket = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress);
+
+    try {
+        let res = await contract.methods.isApprovedForAll(account, Constants.MarketPlaceAddress).call();
+        return {
+            success: res,
+            status: res
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const setApprovalForAllToMarket = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
+
+    try {
+        await snrContract.methods.setApprovalForAll(Constants.MarketPlaceAddress, true).send({from: account});
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: "fail"
+        }
+    }
+}
+
+export const onSale = async (provider, account, tokenId, startPrice) => {
+    const web3 = new Web3(provider);
+    let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
+
+    try {
+        let price = new BigNumber(startPrice)
+        console.log('[kg] => price: ', price);
+        await contract.methods.createSale(tokenId, price).send({from: account});
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch(err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const fetchMarketplaceInfo = async (provider) => {
+
+    const web3 = new Web3(provider);
+    let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress);
+    let marketplaceContract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress)
+
+    try {
+        let data = {
+            balances: 0,
+            tokenIds: [],
+            metadatas: []
+        }
+
+        const balance = await contract.methods.balanceOf(Constants.MarketPlaceAddress).call()
+
+        for (let i = 0; i < balance; i++) {
+            const tokenId = await contract.methods.tokenOfOwnerByIndex(Constants.MarketPlaceAddress, i).call()
+            const dataInfo = await marketplaceContract.methods.getSaleInfo(tokenId).call()
+            data.tokenIds.push(tokenId);
+            data.metadatas.push(dataInfo);
+        }
+        data.balances = balance;
+        return {
+            success: true,
+            status: data
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const destroySale = async (provider, account, tokenId) => {
+    const web3 = new Web3(provider);
+    let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
+
+    try {
+        await contract.methods.destroySale(tokenId).send({from: account});
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch(err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const auction = async (provider, account, tokenId, bidPrice) => {
+    const web3 = new Web3(provider);
+    let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
+
+    try {
+        let price = new BigNumber(bidPrice);
+        await contract.methods.placeBid(tokenId, bidPrice).send({from: account});
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch(err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+export const confirm = async (provider, account, tokenId) => {
+    const web3 = new Web3(provider);
+    let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
+
+    try {
+        await contract.methods.confirm(tokenId).send({from: account});
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch(err) {
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
+//#endregion
 export const withdraw = async (provider) => {
 
     const web3 = new Web3(provider);
@@ -321,7 +474,7 @@ export const withdraw = async (provider) => {
     }
 }
 
-// MCB
+// #region MCB
 
 export const buyPortions = async (provider, account) => {
     const web3 = new Web3(provider);
@@ -423,7 +576,7 @@ export const isApprovedForYEN = async (provider, account) => {
     }
 }
 
-//
+// #endregion
 
 const ContractUtils = {
     getBNBDecimals,
@@ -443,10 +596,18 @@ const ContractUtils = {
     fetchStakingReward,
     fetchStakedInfo,
     fetchUnstakedInfo,
-    setApprovalForAll,
+    setApprovalForAllToStake,
     stake,
     unStake,
-    isApprovedForAll,
+    isApprovedForAllToStake,
+
+    setApprovalForAllToMarket,
+    isApprovedForAllToMarket,
+    onSale,
+    fetchMarketplaceInfo,
+    destroySale,
+    auction,
+    confirm
 };
 
 export default ContractUtils;

@@ -14,6 +14,7 @@ import BigNumber from 'bignumber.js'
 import ContractUtils from '../../utils/contractUtils';
 import { getFullDisplayBalance } from '../../components/formatBalance';
 import Toast from '../../components/Toast';
+import { SUCCESS, WARNNING } from '../../utils/Constants';
 
 const STAKETAB = 1;
 const UNSTAKETAB = 2;
@@ -55,7 +56,7 @@ const Stake = () => {
     const [samAllSelected, setSamAllSelected] = useState(false);
 
     const fetchIsApprovedForAll = async () => {
-        const isApp = await ContractUtils.isApprovedForAll(library, account);
+        const isApp = await ContractUtils.isApprovedForAllToStake(library, account);
         setIsApproved(isApp.success);
     }
 
@@ -226,39 +227,25 @@ const Stake = () => {
 
     const handleStake = async () => {
         if (!account) {
-            setShowToast(true);
-            setToastMessage("Please connect wallet");
-            setToastType(2);
+            onToastOpen(WARNNING, "Please connect wallet");
             return;
         }
 
         if (selectedUnStakedTokenIds.length == 0) {
-            setShowToast(true);
-            setToastMessage("Please select NFT to stake");
-            setToastType(2);
+            onToastOpen(WARNNING, "Please select NFT to stake");
             return;
         }
 
         if (!isApproved) {
-            try {
-                setRequestedApproval(true);
-                let res = await ContractUtils.setApprovalForAll(library, account);
+            setRequestedApproval(true);
+            let res = await ContractUtils.setApprovalForAllToStake(library, account);
+            setRequestedApproval(false);
+
+            if (res.success) {
                 setIsApproved(true);
-                setRequestedApproval(false);
-
-                if (res.success) {
-                    setShowToast(true)
-                    setToastType(1)
-                    setToastMessage("Approved Successfully!");
-                } else {
-                    setShowToast(true);
-                    setToastMessage(res.status);
-                    setToastType(2)
-                }
-
-            } catch {
-                console.log('Approve failed');
-                setRequestedApproval(false);
+                onToastOpen(SUCCESS, "Approved Successfully!");
+            } else {
+                onToastOpen(WARNNING, res.status);
             }
         } else {
             try {
@@ -268,13 +255,9 @@ const Stake = () => {
                 setFetchFlag(true)
 
                 if (res.success) {
-                    setShowToast(true)
-                    setToastType(1)
-                    setToastMessage("Staked Successfully!");
+                    onToastOpen(SUCCESS, "Staked Successfully!");
                 } else {
-                    setShowToast(true);
-                    setToastMessage(res.status);
-                    setToastType(2)
+                    onToastOpen(WARNNING, res.status);
                 }
             } catch {
                 console.log('Stake failed')
@@ -285,16 +268,12 @@ const Stake = () => {
 
     const handleUnStake = async () => {
         if (!account) {
-            setShowToast(true);
-            setToastMessage("Please connect wallet");
-            setToastType(2);
+            onToastOpen(WARNNING, "Please connect wallet");
             return;
         }
 
         if (selectedStakedTokenIds.length == 0) {
-            setShowToast(true);
-            setToastMessage("Please select NFT to unstake");
-            setToastType(2);
+            onToastOpen(WARNNING, "Please select NFT to unstake");
             return;
         }
 
@@ -305,13 +284,9 @@ const Stake = () => {
             setFetchFlag(true);
 
             if (res.success) {
-                setShowToast(true)
-                setToastType(1)
-                setToastMessage("Unstaked Successfully!");
+                onToastOpen(SUCCESS, "Unstaked Successfully");
             } else {
-                setShowToast(true);
-                setToastMessage(res.status);
-                setToastType(2)
+                onToastOpen(WARNNING, res.status);
             }
         } catch {
             console.log('Stake failed');
@@ -321,16 +296,12 @@ const Stake = () => {
 
     const onClickBuyYen = async () => {
         if (!account) {
-            setShowToast(true);
-            setToastMessage("Please connect wallet");
-            setToastType(2);
+            onToastOpen(WARNNING, "Please connect wallet");
             return;
         }
 
         if (selectedStakedTokenIds.length == 0) {
-            setShowToast(true);
-            setToastMessage("Please select NFT to claim");
-            setToastType(2);
+            onToastOpen(WARNNING, "Please select NFT to claim");
             return;
         }
         try {
@@ -340,18 +311,20 @@ const Stake = () => {
             setFetchFlag(true);
 
             if (res.success) {
-                setShowToast(true)
-                setToastType(1)
-                setToastMessage("Claimed Successfully!");
+                onToastOpen(SUCCESS, "Claimed Successfully!");
             } else {
-                setShowToast(true);
-                setToastMessage(res.status);
-                setToastType(2)
+                onToastOpen(WARNNING, res.status);
             }
         } catch {
             console.log('Stake failed');
             setRequestedApproval(false);
         }
+    }
+
+    const onToastOpen = (type, msg) => {
+        setShowToast(true);
+        setToastMessage(msg);
+        setToastType(type);
     }
 
     const onToastClose = () => {

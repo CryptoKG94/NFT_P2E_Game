@@ -3,11 +3,13 @@ import './style.css';
 import Backbutton from "../../assest/Style/Backbutton";
 import ButtonBuy from "../../assest/Style/Navbutton";
 import ConnectButton from "../../assest/Style/ConnectButton";
-import CardMarket from "./component/CardMerchant";
+import CardNFT from "./component/CardMerchant";
 import BigNumber from 'bignumber.js';
 import { useWeb3React } from '@web3-react/core';
 import ContractUtils from '../../utils/contractUtils';
 import { useHistory } from 'react-router-dom';
+import { SUCCESS, WARNNING } from '../../utils/Constants';
+import Toast from '../../components/Toast';
 
 const initNFTInfo = {
     balance: new BigNumber(0),
@@ -27,7 +29,7 @@ const MyNft = () => {
     const history = useHistory();
 
     function handleClick() {
-      history.push("/marketplace");
+        history.push("/marketplace");
     }
 
 
@@ -41,7 +43,7 @@ const MyNft = () => {
     }, [account, fetchFlag])
 
     const fetchIsApprovedForAll = async () => {
-        const isApp = await ContractUtils.isApprovedForAll(library, account);
+        const isApp = await ContractUtils.isApprovedForAllToMarket(library, account);
         setIsApproved(isApp.success);
     }
 
@@ -60,6 +62,42 @@ const MyNft = () => {
         }
     }
 
+    const handleOnSale = async (tokenId, startPrice) => {
+        if (!account) {
+            onToastOpen(WARNNING, "Please connect wallet!");
+            return;
+        }
+
+        if (!isApproved) {
+            let res = await ContractUtils.setApprovalForAllToMarket(library, account);
+                
+            if (res.success) {
+                setIsApproved(true);
+                onToastOpen(SUCCESS, "Approved Successfully!");
+            } else {
+                onToastOpen(WARNNING, res.status);
+            }
+        } else {
+            const res = await ContractUtils.onSale(library, account, tokenId, startPrice);
+            if (res.success) {
+                setFetchFlag(true);
+                onToastOpen(SUCCESS, "On saled Successfully!");
+            } else {
+                onToastOpen(WARNNING, res.status);
+            }
+        }
+    }
+
+    const onToastOpen = (type, msg) => {
+        setShowToast(true);
+        setToastMessage(msg);
+        setToastType(type);
+    }
+
+    const onToastClose = () => {
+        setShowToast(false);
+    }
+
     return (<>
         <div className={'recruit marketPlace'}>
             <div className={'displayRecruit my-4'}>
@@ -72,7 +110,7 @@ const MyNft = () => {
                     </div>
 
                     <div className={'col-4 text-center'}>
-                        <ConnectButton link={'/'} text={'connect wallet'} />
+                        <ConnectButton link={'/'} text={'Connect wallet'} />
                     </div>
 
                 </div>
@@ -86,14 +124,19 @@ const MyNft = () => {
                             const item = nftInfo.metadatas[idx];
                             return (
                                 <div className={'col-lg-3 col-md-4 col-sm-4 col-6'}>
-                                    <CardMarket nft={item} tokenId={tokenId} />
+                                    <CardNFT nft={item} tokenId={tokenId} callback={handleOnSale} isApproved={isApproved} />
                                 </div>
                             )
                         })
                     }
                 </div>
             </div>
-
+            <Toast
+                open={showToast}
+                message={toastMessage}
+                handleClose={onToastClose}
+                type={toastType}
+            />
         </div>
     </>)
 }

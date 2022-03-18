@@ -5,8 +5,9 @@
     padding: .4rem 1.9rem;
     text-decoration: none;
     list-style: none;
-    border: 3px solid black;
+    border: 2px solid black;
     border-radius: 9px;
     text-transform: uppercase;
+    margin-right: 4px;
 }
 
