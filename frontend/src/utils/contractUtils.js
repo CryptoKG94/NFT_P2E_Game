@@ -374,7 +374,7 @@ export const onSale = async (provider, account, tokenId, startPrice) => {
     let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
 
     try {
-        let price = new BigNumber(web3.utils.toWei("" + startPrice));
+        let price = web3.utils.toWei("" + startPrice);
         console.log('[kg] => price: ', price);
         await contract.methods.createSale(tokenId, price).send({ from: account });
         return {
@@ -450,7 +450,7 @@ export const auction = async (provider, account, tokenId, bidPrice) => {
     let contract = await new web3.eth.Contract(MarketplaceContractABI, Constants.MarketPlaceAddress);
 
     try {
-        let price = new BigNumber(web3.utils.toWei("" + bidPrice));
+        let price = web3.utils.toWei("" + bidPrice);
         await contract.methods.placeBid(tokenId, price).send({ from: account });
         return {
             success: true,
