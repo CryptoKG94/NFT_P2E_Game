@@ -400,7 +400,9 @@ export const fetchMarketplaceInfo = async (provider) => {
             balances: 0,
             tokenIds: [],
             saleInfo: [],
-            nftInfo: []
+            nftInfo: [],
+            floorPrice: 10000000,
+            highPrice: 0
         }
 
         const balance = await contract.methods.balanceOf(Constants.MarketPlaceAddress).call()
@@ -413,6 +415,9 @@ export const fetchMarketplaceInfo = async (provider) => {
             data.tokenIds.push(tokenId);
             data.nftInfo.push(nftInfo);
             data.saleInfo.push(saleInfo);
+            let price = web3.utils.fromWei("" + saleInfo.startPrice);
+            if (data.floorPrice > price) data.floorPrice = price;
+            if (data.highPrice < price) data.highPrice = price;
         }
         data.balances = balance;
         return {
@@ -546,13 +551,13 @@ export const isApprovedForYENToMarketplace = async (provider, account) => {
 
 // #region MCB
 
-export const buyPortions = async (provider, account) => {
+export const buyPortions = async (provider, account, amount) => {
     const web3 = new Web3(provider);
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
 
     try {
         console.log("buy portions");
-        let res = await lordContract.methods.buyPortions(1).send({ from: account });
+        let res = await lordContract.methods.buyPortions(amount).send({ from: account });
         return {
             success: true,
             status: true
@@ -565,13 +570,13 @@ export const buyPortions = async (provider, account) => {
     }
 }
 
-export const buyCrossbows = async (provider, account) => {
+export const buyCrossbows = async (provider, account, amount) => {
     const web3 = new Web3(provider);
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
 
     try {
         console.log("buy crossbow");
-        let res = await lordContract.methods.buyCrossBows(1, true).send({ from: account });
+        let res = await lordContract.methods.buyCrossBows(amount, true).send({ from: account });
         return {
             success: true,
             status: true
@@ -584,13 +589,13 @@ export const buyCrossbows = async (provider, account) => {
     }
 }
 
-export const buyShields = async (provider, account) => {
+export const buyShields = async (provider, account, amount) => {
     const web3 = new Web3(provider);
     let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
 
     try {
         console.log("buy shield");
-        let res = await snrContract.methods.buyShields(1).send({ from: account });
+        let res = await snrContract.methods.buyShields(amount).send({ from: account });
         return {
             success: true,
             status: true

@@ -69,7 +69,7 @@ const Marchant = () => {
 
         try {
             setRequestedApproval(true);
-            let res = await ContractUtils.buyPortions(library, account);
+            let res = await ContractUtils.buyPortions(library, account, );
             setRequestedApproval(false)
             setFetchFlag(true)
             if (res.success) {

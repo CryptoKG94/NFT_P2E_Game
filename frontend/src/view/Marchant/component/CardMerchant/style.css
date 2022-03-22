@@ -42,3 +42,8 @@ align-items: center;
     font-weight: 600;
 align-items: center;
 }
+
+.InputCheck{
+    font-size: 25px;
+    width: 50px;
+}

@@ -4,7 +4,7 @@ import Backbutton from "../../assest/Style/Backbutton";
 import ButtonLink from "../../assest/Style/ButtonLink";
 import ButtonNav from "../../assest/Style/Navbutton";
 import ConnectButton from "../../assest/Style/ConnectButton";
-import CardMarket from "./component/CardMerchant";
+import CardMarket from "./component/CardMarket";
 import NavbarSelector from "./component/Navbar";
 import BigNumber from 'bignumber.js';
 import { useWeb3React } from '@web3-react/core';
@@ -31,26 +31,15 @@ const MarcketPlace = () => {
     const [nftInfo, setNFTInfo] = useState();
     const [fetchFlag, setFetchFlag] = useState(true);
     const [loading, setLoading] = useState(false);
-
+    const [floorPrice, setFloorPrice] = useState(0);
+    const [highPrice, setHighPrice] = useState(0);
+    const [totalSaleVolume, setTotalSaleVolume] = useState(0);
     const history = useHistory();
 
     function handleClick() {
         history.push("/marketplace");
     }
-
-
-    useEffect(async () => {
-        if (fetchFlag && account) {
-            console.log('fetchFlag:  TRUE');
-            setLoading(true);
-            await fetchIsApprovedForAll();
-            await fetchIsApprovedForYen();
-            await fetchNFTInfo();
-            setFetchFlag(false);
-            setLoading(false);
-        }
-    }, [account, fetchFlag])
-
+  
     const fetchIsApprovedForAll = async () => {
         const isApp = await ContractUtils.isApprovedForAllToMarket(library, account);
         setIsApproved(isApp.success);
@@ -72,10 +61,25 @@ const MarcketPlace = () => {
                 nfts.tokenIds = res.status.tokenIds.slice();
                 nfts.saleInfo = res.status.saleInfo.slice();
                 nfts.nftInfo = res.status.nftInfo.slice();
+                setFloorPrice(res.status.floorPrice);
+                setHighPrice(res.status.highPrice);
                 setNFTInfo(nfts);
+                setTotalSaleVolume(nfts.balance);
             }
         }
     }
+
+    useEffect(async () => {
+        if (fetchFlag && account) {
+            console.log('fetchFlag:  TRUE');
+            setLoading(true);
+            await fetchIsApprovedForAll();
+            await fetchIsApprovedForYen();
+            await fetchNFTInfo();
+            setFetchFlag(false);
+            setLoading(false);
+        }
+    }, [account, fetchFlag])
 
     const handleDestroySale = async (tokenId) => {
         if (account) {
@@ -150,11 +154,11 @@ const MarcketPlace = () => {
             <div className={'navbarSelect container'}>
                 <div className={'row'}>
                     <div className={'col-2'}>
-                        <NavbarSelector text={'floor price'} price={"$55"} />
+                        <NavbarSelector text={'floor price'} price={ floorPrice } />
                     </div> <div className={'col-2'}>
-                        <NavbarSelector text={'Highest Sale price'} price={"$55"} />
+                        <NavbarSelector text={'Highest Sale price'} price={ highPrice } />
                     </div> <div className={'col-2'}>
-                        <NavbarSelector text={'Total sale volume'} price={"$55"} />
+                        <NavbarSelector text={'Total sale volume'} price={ totalSaleVolume } />
                     </div> <div className={'col-4'}>
                         <NavbarSelector text={'Price (lowest to highest)'} />
                     </div> <div className={'col-2'}>
