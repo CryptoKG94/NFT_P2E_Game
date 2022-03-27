@@ -112,14 +112,15 @@ background: red;
     margin: 3px;
     cursor: pointer;
 }
-.btncheck{
-    font-size: 16px;
+.checkbox-label{
+    font-size: 22px;
     text-transform: uppercase;
     color: white;
+    padding: 0 20px 0 10px;
 }
 .InputCheck{
     font-size: 33px;
-    width: 50px;
+    /* width: 50px; */
 }
 input[type=checkbox]
 {

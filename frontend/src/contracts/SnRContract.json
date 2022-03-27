@@ -254,6 +254,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "SHIELD_PRICE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -365,6 +378,19 @@
           "type": "bool"
         }
       ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint80",
+          "name": "_amount",
+          "type": "uint80"
+        }
+      ],
+      "name": "buyShields",
+      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -559,12 +585,50 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "isFreelist",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "tokenId",
           "type": "uint256"
         }
       ],
       "name": "isRonin",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "isWhitelist",
       "outputs": [
         {
           "internalType": "bool",
@@ -598,6 +662,11 @@
         {
           "internalType": "bool",
           "name": "stake",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "useShield",
           "type": "bool"
         }
       ],
@@ -952,6 +1021,25 @@
       "name": "setWhitelist",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "shields",
+      "outputs": [
+        {
+          "internalType": "uint80",
+          "name": "",
+          "type": "uint80"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {

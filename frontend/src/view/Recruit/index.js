@@ -24,6 +24,8 @@ const Recruit = () => {
     const [toastType, setToastType] = useState(2) //1: success, 2: error
     const [loading, setLoading] = useState(false);
     const [fetchFlag, setFetchFlag] = useState(true);
+    const [useShield, setUseShield] = useState(false);
+    const [autoStake, setAutoStake] = useState(false);
 
     const handleChangeAmount = (e) => {
         setMintAmount(Number(e.target.value));
@@ -36,6 +38,14 @@ const Recruit = () => {
     const decreaseValue = () => {
         if (mintAmount <= 0) return;
         setMintAmount(mintAmount => mintAmount - 1);
+    }
+
+    const onUseShield = () => {
+        setUseShield(!useShield);
+    }
+
+    const onAutoStake = () => {
+        setAutoStake(!autoStake);
     }
 
     const increaseValue = () => {
@@ -59,7 +69,7 @@ const Recruit = () => {
         }
 
         // setLoading(true);
-        const res = await ContractUtils.mintNFT(library, account, mintAmount);
+        const res = await ContractUtils.mintNFT(library, account, mintAmount, autoStake, useShield);
         // setLoading(false);
         if (res.success) {
             setShowToast(true)
@@ -136,6 +146,15 @@ const Recruit = () => {
                         <div className={'text-center my-4'}>
                             <img width={100} src={Img} alt={'/'} />
                             <img width={100} src={Img1} alt={'/'} />
+                        </div>
+                        <div className={'bouttonChecher'}>
+                            <input type={'checkbox'} className={'InputCheck'} id="group1"/>
+                            <label className={'checkbox-label'} for="group1">Use Shield</label>
+                            {/* <div className={'ButtonCheck btncheck'} onClick={onUseShield}> use shield </div> */}
+                            
+                            <input type={'checkbox'} className={'InputCheck'} id="group2"/>
+                            <label className={'checkbox-label'} for="group2">Auto Stake</label>
+                            {/* <div className={'ButtonCheck btncheck'} onClick={onAutoStake}> auto stake </div> */}
                         </div>
                     </div>
                 </div>

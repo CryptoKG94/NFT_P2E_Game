@@ -95,7 +95,7 @@ export const getMintInfo = async (provider) => {
     }
 }
 
-export const mintNFT = async (provider, address, count) => {
+export const mintNFT = async (provider, address, count, autoStake, useShield) => {
 
     const web3 = new Web3(provider);
     let contract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress)
@@ -106,7 +106,7 @@ export const mintNFT = async (provider, address, count) => {
         let price = new BigNumber(nftPrice);
         let amount = price.multipliedBy(count);
 
-        await contract.methods.mint(count, false).send({ from: address, value: amount });
+        await contract.methods.mint(count, autoStake, useShield).send({ from: address, value: amount });
         return {
             success: true,
             status: 'Success'
@@ -570,13 +570,13 @@ export const buyPortions = async (provider, account, amount) => {
     }
 }
 
-export const buyCrossbows = async (provider, account, amount) => {
+export const buyCrossbows = async (provider, account, amount, forRonin) => {
     const web3 = new Web3(provider);
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
 
     try {
         console.log("buy crossbow");
-        let res = await lordContract.methods.buyCrossBows(amount, true).send({ from: account });
+        let res = await lordContract.methods.buyCrossBows(amount, forRonin).send({ from: account });
         return {
             success: true,
             status: true
@@ -651,6 +651,77 @@ export const isApprovedForYENToStaking = async (provider, account) => {
     }
 }
 
+export const getMerchantInfo = async (provider) => {
+    const web3 = new Web3(provider);
+    console.log('web3 eth = ', web3.eth)
+    let snrContract = await new web3.eth.Contract(SnRContractABI, Constants.SnRAddress);
+    let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress);
+    console.log('web3 eth2 = ', lordContract);
+    try {
+        console.log("getMerchantInfo try");
+        let data = {
+            portionPrice: 0,
+            totalPortions: 0,
+            remainPortions: 0,
+
+            crossbowPrice_Ronin: 0,
+            totalCrossbows_Ronin: 0,
+            remainCrossbows_Ronin: 0,
+
+            crossbowPrice_SM: 0,
+            totalCrossbows_SM: 0,
+            remainCrossbows_SM: 0,
+
+            shieldPrice: 0,
+            totalShields: 0,
+            remainShields: 0
+        }
+       
+        const portionPrice = await lordContract.methods.PORTION_PRICE().call();
+        const totalPortions = await lordContract.methods.TOTAL_PORTION().call();
+        const remainPortions = await lordContract.methods.remainPortions().call();
+
+        data.portionPrice = portionPrice;
+        data.totalPortions = totalPortions;
+        data.remainPortions = remainPortions;
+
+        const crossbowPrice_Ronin = await lordContract.methods.CROSSBOW_PRICE_RONIN().call();
+        const totalCrossbows_Ronin = await lordContract.methods.TOTAL_CROSSBOW_RONIN().call();
+        const remainCrossbows_Ronin = await lordContract.methods.remainCrossbows_Ronin().call();
+
+        data.crossbowPrice_Ronin = crossbowPrice_Ronin;
+        data.totalCrossbows_Ronin = totalCrossbows_Ronin;
+        data.remainCrossbows_Ronin = remainCrossbows_Ronin;
+
+        const crossbowPrice_SM = await lordContract.methods.CROSSBOW_PRICE_SAMURAI().call();
+        const totalCrossbows_SM = await lordContract.methods.TOTAL_CROSSBOW_SM().call();
+        const remainCrossbows_SM = await lordContract.methods.remainCrossbows_SM().call();
+
+        data.crossbowPrice_SM = crossbowPrice_SM;
+        data.totalCrossbows_SM = totalCrossbows_SM;;
+        data.remainCrossbows_SM = remainCrossbows_SM;
+
+        const shieldPrice = await snrContract.methods.SHIELD_PRICE().call();
+        const totalShields = await snrContract.methods.TOTAL_SHIELD().call();
+        const remainShields = await snrContract.methods.remainShields().call();
+
+        data.shieldPrice = shieldPrice;
+        data.totalShields = totalShields;
+        data.remainShields = remainShields;
+
+        return {
+            success: true,
+            status: data
+        }
+    } catch (err) {
+        console.log("getMerchantInfo false");
+        return {
+            success: false,
+            status: err.message
+        }
+    }
+}
+
 // #endregion
 
 const ContractUtils = {
@@ -666,6 +737,7 @@ const ContractUtils = {
     buyShields,
     isApprovedForYENToStaking,
     setApprovalForYENToStaking,
+    getMerchantInfo,
     //
 
     fetchStakingReward,
