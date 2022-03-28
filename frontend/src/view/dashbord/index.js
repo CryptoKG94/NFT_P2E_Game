@@ -10,14 +10,14 @@ import Img from "../../assest/images/img1.png";
 import Img1 from "../../assest/images/img2.png";
 import {Link} from "react-router-dom";
 
-const List = ({text}) =>{
-    return(
-        <div className={'mainBar mt-2'}>
-            <div className={'statistic'}>{text}. oxaoaf...4012</div>
-            <div className={'statistic'}>30,000,234 yen</div>
-        </div>
-    )
-}
+// const List = ({text}) =>{
+//     return(
+//         <div className={'mainBar mt-2'}>
+//             <div className={'statistic'}>{text}. oxaoaf...4012</div>
+//             <div className={'statistic'}>30,000,234 yen</div>
+//         </div>
+//     )
+// }
 
 const Dashboard = () =>{
     return(<>
@@ -37,27 +37,17 @@ const Dashboard = () =>{
             </div>
             <div className={'container'}>
                 <div className={'blackGlass mt-5'}>
-<div className={'mainBar'}>
-    <Link to={'/static'} className={'statistic'}>Statistic</Link>
-    <div className={'statistic'}>Leaderboard</div>
-</div>
+                    <div className={'mainBar'}>
+                        <Link to={'/static'} className={'statistic'}>Statistic</Link>
+                        <div className={'statistic'}>Leaderboard</div>
+                    </div>
 
-                    <div className={'mainBar mt-5'}>
+                    {/* <div className={'mainBar mt-5'}>
                         <div className={'statistic'}>1. oxaoaf...4012</div>
                         <div className={'statistic'}>30,000,234 yen</div>
                     </div>
-                    <List text={2}/>
-                    <List text={3}/>
-                    <List text={4}/>
-                    <List text={5}/>
-                    <List text={6}/>
-                    <List text={7}/>
-                    <List text={8}/>
-                    <List text={9}/>
-                    <List text={10}/>
-                    <List text={11}/>
-                    <List text={12}/>
-                    <List text={13}/>
+
+                    */}
                 </div>
 
             </div>

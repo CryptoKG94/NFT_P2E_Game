@@ -25,7 +25,7 @@ function App() {
               <ScrollToTop/>
               <Switch>
                   <Route path="/" exact component={MainPage} />
-                  <Route path="/dashboard" exact component={Dashbord} />
+                  <Route path="/dashboard" exact component={statics} />
                   <Route path="/recruit" exact component={Recruit} />
                   <Route path="/stack" exact component={Stake} />
                   <Route path="/mynft" exact component={MyNft} />
