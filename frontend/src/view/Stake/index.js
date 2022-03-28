@@ -12,10 +12,11 @@ import { useDispatch } from 'react-redux';
 import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js'
 import ContractUtils from '../../utils/contractUtils';
-import { getFullDisplayBalance } from '../../components/formatBalance';
+import { getFullDisplayBalance, getBalanceNumber } from '../../components/formatBalance';
 import Toast from '../../components/Toast';
 import Loading from '../../components/Loading';
 import { SUCCESS, WARNNING } from '../../utils/Constants';
+import TimerComponent from '../../components/timer';
 
 const STAKETAB = 1;
 const UNSTAKETAB = 2;
@@ -24,6 +25,7 @@ const initStakedInfo = {
     balance: new BigNumber(0),
     tokenIds: [],
     metadatas: [],
+    stakeInfo: []
 }
 
 const initUnStakedInfo = {
@@ -56,6 +58,8 @@ const Stake = () => {
     const [roninAllSelected, setRoninAllSelected] = useState(false);
     const [samAllSelected, setSamAllSelected] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [usePortion, setUsePortion] = useState(false);
+    const [useCrossBow, setUseCrossBow] = useState(false);
 
     const fetchIsApprovedForAll = async () => {
         const isApp = await ContractUtils.isApprovedForAllToStake(library, account);
@@ -72,15 +76,15 @@ const Stake = () => {
             setFetchFlag(false)
             setLoading(false);
         }
-        if (account) fetchReward()
+        // if (account) fetchReward()
     }, [account, fetchFlag])
 
-    const fetchReward = async () => {
-        const result = await ContractUtils.fetchStakingReward(library, account);
-        if (result.success) {
-            setReward(getFullDisplayBalance(new BigNumber(result.status)))
-        }
-    }
+    // const fetchReward = async () => {
+    //     const result = await ContractUtils.fetchStakingReward(library, account);
+    //     if (result.success) {
+    //         setReward(getFullDisplayBalance(new BigNumber(result.status)))
+    //     }
+    // }
 
     async function fetchUnStakedInfo() {
 
@@ -109,6 +113,7 @@ const Stake = () => {
                 staked.balance = res.status.balances;
                 staked.tokenIds = res.status.tokenIds.slice();
                 staked.metadatas = res.status.metadatas.slice();
+                staked.stakeInfo = res.status.stakeInfo.slice();
                 setStakedInfo(staked);
             }
         }
@@ -138,6 +143,10 @@ const Stake = () => {
             }
         }
         return list;
+    }
+
+    const onSelectChange = async (e) => {
+        console.log(e);
     }
 
     const unstakedNFTClick = async (tokenId, index) => {
@@ -176,10 +185,11 @@ const Stake = () => {
     }
 
     const onClickRoninSelectAll = () => {
-        setRoninAllSelected(!roninAllSelected);
+        let selectState = !roninAllSelected;
+        setRoninAllSelected(selectState);
         let newlist = tabStatus == STAKETAB ? selectedStakedTokenIds : selectedUnStakedTokenIds;
         let info = tabStatus == STAKETAB ? stakedInfo : unstakedInfo;
-        if (roninAllSelected) {
+        if (selectState) {
             info && info.tokenIds && info.tokenIds.map((tokenId, idx) => {
                 const item = info.metadatas[idx];
                 if (item.isRonin && !IsSelected(tabStatus, tokenId)) {
@@ -203,10 +213,11 @@ const Stake = () => {
     }
 
     const onClickSamuSelectAll = () => {
-        setSamAllSelected(!samAllSelected);
+        let selectState = !samAllSelected;
+        setSamAllSelected(selectState);
         let newlist = tabStatus == STAKETAB ? selectedStakedTokenIds : selectedUnStakedTokenIds;
         let info = tabStatus == STAKETAB ? stakedInfo : unstakedInfo;
-        if (samAllSelected) {
+        if (selectState) {
             info && info.tokenIds && info.tokenIds.map((tokenId, idx) => {
                 const item = info.metadatas[idx];
                 if (!item.isRonin && !IsSelected(tabStatus, tokenId)) {
@@ -283,7 +294,7 @@ const Stake = () => {
 
         try {
             setRequestedApproval(true);
-            let res = await ContractUtils.unStake(library, account, selectedStakedTokenIds, true);
+            let res = await ContractUtils.unStake(library, account, selectedStakedTokenIds, usePortion, useCrossBow, true);
             setRequestedApproval(false);
             setFetchFlag(true);
 
@@ -310,7 +321,7 @@ const Stake = () => {
         }
         try {
             setRequestedApproval(true);
-            let res = await ContractUtils.unStake(library, account, selectedUnStakedTokenIds, false);
+            let res = await ContractUtils.unStake(library, account, selectedStakedTokenIds, usePortion, useCrossBow, false);
             setRequestedApproval(false);
             setFetchFlag(true);
 
@@ -323,6 +334,14 @@ const Stake = () => {
             console.log('Stake failed');
             setRequestedApproval(false);
         }
+    }
+
+    const handleUsePortion = () => {
+        setUsePortion(!usePortion);
+    }
+
+    const handleUseCrossBow = () => {
+        setUseCrossBow(!useCrossBow);
     }
 
     const onToastOpen = (type, msg) => {
@@ -343,7 +362,10 @@ const Stake = () => {
                         <Backbutton link={'/'} />
                     </div>
                     <div className={'col-4 text-center'}>
-                        <ButtonNav disabled={tabStatus == STAKETAB ? true : false} func={handleStake} text={isApproved ? 'STAKE' : 'APPROVE'}/>
+                        {tabStatus == UNSTAKETAB ?
+                            <ButtonNav func={handleStake} text={isApproved ? 'STAKE' : 'APPROVE'} />
+                            : <></>
+                        }
                     </div>
                     <div className={'col-4 text-center'}>
                         <ConnectButton />
@@ -351,44 +373,118 @@ const Stake = () => {
                 </div>
             </div>
 
-            <div className={'blackGlass mt-5'}>
+            <div className={'items-container'}>
                 <div className={'StackV container'}>
                     <div className={'stackDiv'}>
                         <div className={tabStatus == STAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(STAKETAB)}>Stack - 30</div>
                         <div className={tabStatus == UNSTAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStack - 30</div>
                     </div>
-                    <div className={'d-flex justify-content-center align-items-center'}>
-                        <ButtonBuy disabled={tabStatus != STAKETAB ? true : false} func={onClickBuyYen} text={'Claim YEN'} />
-                        <ButtonBuy disabled={tabStatus != STAKETAB ? true : false} func={handleUnStake} text={'Claim YEN & Unstake'} />
-                    </div>
+                    {tabStatus == STAKETAB ?
+                        <div className={'d-flex justify-content-center align-items-center'}>
+                            <ButtonBuy disabled={tabStatus != STAKETAB ? true : false} func={onClickBuyYen} text={'Claim YEN'} />
+                            <ButtonBuy disabled={tabStatus != STAKETAB ? true : false} func={handleUnStake} text={'Claim YEN & Unstake'} />
+                        </div>
+                        : <></>
+                    }
 
                 </div>
 
-                <div className={'my-5'}>
-                    <div style={{textAlign: "center"}}>
-                        <div className={'textReward'}> {`Reward: ${reward} YEN`}</div>
-                    </div>
+                <div className={'my-5'}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
                     <div className={'textStake'}>
                         you can only unstake if ronin collected at least 2$ bribe
                     </div>
+                    {tabStatus == STAKETAB ?
+                        <div style={{
+                            fontSize: '20px',
+                            marginLeft: '20px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}>
+                            <input type={'checkbox'} className={'InputCheck'} id="stake-shield" checked={usePortion} onChange={() => handleUsePortion()} />
+                            <label style={{ color: 'red', padding: '10px' }} htmlFor="stake-shield">USE PORTION</label>
+
+                            <input type={'checkbox'} className={'InputCheck'} id="stake-auto" checked={useCrossBow} onChange={() => handleUseCrossBow()}/>
+                            <label style={{ color: 'red', padding: '10px' }} htmlFor="stake-auto">USE CROSSBOW</label>
+                        </div>
+                        : <></>
+                    }
                     <div className={'d-flex justify-content-sm-between align-items-center'}>
-                        <div className={'stakes'}>ronin - 12</div>
+                        <div className={'stakes ronin-12'}>ronin - 12</div>
                         <div className={'stakes stakes-btn'} onClick={onClickRoninSelectAll}>select all</div>
                     </div>
-                    <div className={'row m-4'}>
+                    <div className={'row m-4'}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            maxWidth: '1000px',
+                        }}>
                         {
                             tabStatus == STAKETAB ?
                                 stakedInfo && stakedInfo.tokenIds && stakedInfo.tokenIds.map((tokenId, idx) => {
                                     const item = stakedInfo.metadatas[idx];
+                                    const stakeInfo = stakedInfo.stakeInfo[idx];
                                     const selected = IsSelected(STAKETAB, tokenId);
                                     if (item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
-                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
-                                                    <div className={'stakeText'}>0.1 FTM</div>
+                                            <div
+                                                style={{
+                                                    margin: "10px",
+                                                    width: "180px",
+                                                    height: "270px",
+                                                    backgroundColor: "#010414",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    textAlign: "center",
+                                                    borderRadius: "20px",
+                                                    color: "white",
+                                                    border: "2px solid white",
+                                                }}
+                                                key={tokenId}
+                                            >
+                                                <div style={{}}>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent: "space-around",
+                                                            alignItems: "center",
+                                                        }}
+                                                    >
+                                                        <h1>{`NFT ID:${tokenId}`}</h1>
+                                                        <input type={'checkbox'} className={'InputCheck'} checked={selected} onChange={() => stakedNFTClick(tokenId, idx)} />
+                                                    </div>
+
+                                                    <img
+                                                        style={{
+                                                            borderRadius: "30px",
+                                                            padding: "10px",
+                                                        }}
+                                                        width="120px"
+                                                        height="130px"
+                                                        src={RoninImg}
+                                                        alt={"/"}
+                                                    />
+
+                                                    <h3>
+                                                        Reward:{" "}
+                                                        <span style={{ paddingLeft: "26px" }}>{`${getBalanceNumber(stakeInfo.reward)}`}</span>
+                                                    </h3>
+                                                    <TimerComponent depositTime={stakeInfo.depositTime} />
                                                 </div>
                                             </div>
+                                            // <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
+                                            //     <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
+                                            //         <img width='80' src={RoninImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
+                                            //         <div className={'stakeText'}>0.1 FTM</div>
+                                            //     </div>
+                                            // </div>
                                         )
                                     }
                                 })
@@ -398,10 +494,44 @@ const Stake = () => {
                                     const selected = IsSelected(UNSTAKETAB, tokenId);
                                     if (item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
-                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={RoninImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
-                                                    <div className={'stakeText'}>0.1 FTM</div>
+                                            <div
+                                                style={{
+                                                    margin: "10px",
+                                                    width: "180px",
+                                                    height: "270px",
+                                                    backgroundColor: "#010414",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    textAlign: "center",
+                                                    borderRadius: "20px",
+                                                    color: "white",
+                                                    border: "2px solid white",
+                                                }}
+                                                key={tokenId}
+                                            >
+                                                <div style={{}}>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent: "space-around",
+                                                            alignItems: "center",
+                                                        }}
+                                                    >
+                                                        <h1>{`NFT ID:${tokenId}`}</h1>
+                                                        <input type={'checkbox'} className={'InputCheck'} checked={selected} onChange={() => unstakedNFTClick(tokenId, idx)} />
+                                                    </div>
+
+                                                    <img
+                                                        style={{
+                                                            borderRadius: "30px",
+                                                            padding: "10px",
+                                                        }}
+                                                        width="120px"
+                                                        height="130px"
+                                                        src={RoninImg}
+                                                        alt={"/"}
+                                                    />
                                                 </div>
                                             </div>
                                         )
@@ -410,7 +540,7 @@ const Stake = () => {
                         }
                     </div>
                     <div className={'d-flex justify-content-sm-between align-items-center'}>
-                        <div className={'stakes'}>samurai</div>
+                        <div className={'stakes ronin-12'}>samurai</div>
                         <div className={'stakes stakes-btn'} onClick={onClickSamuSelectAll}>select all</div>
                     </div>
                     <div className={'row m-4'}>
@@ -418,13 +548,53 @@ const Stake = () => {
                             tabStatus == STAKETAB ?
                                 stakedInfo && stakedInfo.tokenIds && stakedInfo.tokenIds.map((tokenId, idx) => {
                                     const item = stakedInfo.metadatas[idx];
+                                    const stakeInfo = stakedInfo.stakeInfo[idx];
                                     const selected = IsSelected(STAKETAB, tokenId);
                                     if (!item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => stakedNFTClick(tokenId, idx)}>
-                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={SamImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
-                                                    <div className={'stakeText'}>0.1 FTM</div>
+                                            <div
+                                                style={{
+                                                    margin: "10px",
+                                                    width: "180px",
+                                                    height: "270px",
+                                                    backgroundColor: "#010414",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    textAlign: "center",
+                                                    borderRadius: "20px",
+                                                    color: "white",
+                                                    border: "2px solid white",
+                                                }}
+                                                key={tokenId}
+                                            >
+                                                <div style={{}}>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent: "space-around",
+                                                            alignItems: "center",
+                                                        }}
+                                                    >
+                                                        <h1>{`NFT ID:${tokenId}`}</h1>
+                                                        <input type={'checkbox'} className={'InputCheck'} checked={selected} onChange={() => stakedNFTClick(tokenId, idx)} />
+                                                    </div>
+
+                                                    <img
+                                                        style={{
+                                                            borderRadius: "30px",
+                                                            padding: "10px",
+                                                        }}
+                                                        width="120px"
+                                                        height="130px"
+                                                        src={SamImg}
+                                                        alt={"/"}
+                                                    />
+
+                                                    <h3>
+                                                        Reward:{" "}
+                                                        <span style={{ paddingLeft: "26px" }}>{`${getBalanceNumber(stakeInfo.reward)}`}</span>
+                                                    </h3>
                                                 </div>
                                             </div>
                                         )
@@ -436,10 +606,44 @@ const Stake = () => {
                                     const selected = IsSelected(UNSTAKETAB, tokenId);
                                     if (!item.isRonin) {
                                         return (
-                                            <div className={'col-lg-2 col-md-3 col-sm-4'} onClick={() => unstakedNFTClick(tokenId, idx)}>
-                                                <div className={selected ? 'stackeImg withBorder' : 'stackeImg noBorder'}>
-                                                    <img width='80' src={SamImg} alt={'NFT'} style={{ borderRadius: '5px' }} />
-                                                    <div className={'stakeText'}>0.1 FTM</div>
+                                            <div
+                                                style={{
+                                                    margin: "10px",
+                                                    width: "180px",
+                                                    height: "270px",
+                                                    backgroundColor: "#010414",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    textAlign: "center",
+                                                    borderRadius: "20px",
+                                                    color: "white",
+                                                    border: "2px solid white",
+                                                }}
+                                                key={tokenId}
+                                            >
+                                                <div style={{}}>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            justifyContent: "space-around",
+                                                            alignItems: "center",
+                                                        }}
+                                                    >
+                                                        <h1>{`NFT ID:${tokenId}`}</h1>
+                                                        <input type={'checkbox'} className={'InputCheck'} checked={selected} onChange={() => unstakedNFTClick(tokenId, idx)} />
+                                                    </div>
+
+                                                    <img
+                                                        style={{
+                                                            borderRadius: "30px",
+                                                            padding: "10px",
+                                                        }}
+                                                        width="120px"
+                                                        height="130px"
+                                                        src={SamImg}
+                                                        alt={"/"}
+                                                    />
                                                 </div>
                                             </div>
                                         )

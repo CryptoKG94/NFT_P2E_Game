@@ -165,14 +165,14 @@ export const getAssetInfo = async (provider, address) => {
 
 //#region staking
 
-export const fetchStakingReward = async (provider, account) => {
+export const fetchStakingReward = async (provider, tokenId) => {
 
     const web3 = new Web3(provider);
     let contract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress)
 
     try {
         const result = await contract.methods
-            .pendingTotalReward(account)
+            .pendingTokenReward(tokenId)
             .call()
 
         return {
@@ -230,15 +230,22 @@ export const fetchStakedInfo = async (provider, account) => {
     let data = {
         balances: 0,
         tokenIds: [],
-        metadatas: []
+        metadatas: [],
+        stakeInfo: [],
     }
 
     try {
         const tokenIds = await lordContract.methods.getStakeUserInfo(account).call()
-        let a = 0;
-        for (a = 0; a < tokenIds.length; a++) {
-            const tokenInfo = await snrContract.methods.tokenTraits(tokenIds[a]).call()
-            data.tokenIds.push(tokenIds[a])
+        let i = 0;
+        for (i = 0; i < tokenIds.length; i++) {
+            const tokenInfo = await snrContract.methods.tokenTraits(tokenIds[i]).call();
+            const reward = await lordContract.methods.pendingTokenReward(tokenIds[i]).call();
+            const depositTime = await lordContract.methods.lord(tokenIds[i]).call();
+            data.stakeInfo.push({
+                depositTime: depositTime.value,
+                reward: reward
+            })
+            data.tokenIds.push(tokenIds[i])
             data.metadatas.push(tokenInfo)
         }
 
@@ -293,12 +300,12 @@ export const stake = async (provider, account, tokenIds) => {
     }
 }
 
-export const unStake = async (provider, account, tokenIds, isUnstake) => {
+export const unStake = async (provider, account, tokenIds, usePortion, useCrossBow, isUnstake) => {
     const web3 = new Web3(provider);
     let lordContract = await new web3.eth.Contract(LordContractABI, Constants.LordAddress)
 
     try {
-        await lordContract.methods.claimManyFromLord(tokenIds, isUnstake).send({ from: account });
+        await lordContract.methods.claimManyFromLord(tokenIds, isUnstake, usePortion, useCrossBow).send({ from: account });
         return {
             success: true,
             status: "success"

@@ -135,7 +135,7 @@ const Recruit = () => {
                             <br />
 
                             {account ? (
-                                <div className={'bouttonChecher'}>
+                                <div className={'recruit-buttoncheck'}>
                                     <div className={'ButtonCheck'} onClick={decreaseValue}>-</div>
                                     <div className={'ButtonCheck'} onClick={onClickMint}>{`Mint ${mintAmount} nft`}</div>
                                     <div className={'ButtonCheck'} onClick={increaseValue}>+</div>
@@ -147,13 +147,13 @@ const Recruit = () => {
                             <img width={100} src={Img} alt={'/'} />
                             <img width={100} src={Img1} alt={'/'} />
                         </div>
-                        <div className={'bouttonChecher'}>
+                        <div className={'recruit-buttoncheck'}>
                             <input type={'checkbox'} className={'InputCheck'} id="group1"/>
-                            <label className={'checkbox-label'} for="group1">Use Shield</label>
+                            <label className={'checkbox-label'} htmlFor="group1" checked={useShield} onChange={() => setUseShield(!useShield)}>Use Shield</label>
                             {/* <div className={'ButtonCheck btncheck'} onClick={onUseShield}> use shield </div> */}
                             
                             <input type={'checkbox'} className={'InputCheck'} id="group2"/>
-                            <label className={'checkbox-label'} for="group2">Auto Stake</label>
+                            <label className={'checkbox-label'} htmlFor="group2" checked={autoStake} onChange={() => setAutoStake(!autoStake)}>Auto Stake</label>
                             {/* <div className={'ButtonCheck btncheck'} onClick={onAutoStake}> auto stake </div> */}
                         </div>
                     </div>

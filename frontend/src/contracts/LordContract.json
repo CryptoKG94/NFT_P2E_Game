@@ -242,12 +242,38 @@
     },
     {
       "inputs": [],
-      "name": "SHIELD_PRICE",
+      "name": "TOTAL_CROSSBOW_RONIN",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint16",
           "name": "",
-          "type": "uint256"
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TOTAL_CROSSBOW_SM",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TOTAL_PORTION",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
         }
       ],
       "stateMutability": "view",
@@ -364,6 +390,16 @@
         {
           "internalType": "bool",
           "name": "unstake",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "usePortion",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "useCrossbow",
           "type": "bool"
         }
       ],
@@ -517,11 +553,6 @@
           "internalType": "uint80",
           "name": "crossBowsSamurai",
           "type": "uint80"
-        },
-        {
-          "internalType": "uint80",
-          "name": "shields",
-          "type": "uint80"
         }
       ],
       "stateMutability": "view",
@@ -644,6 +675,25 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "pendingTokenReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
           "name": "seed",
           "type": "uint256"
         }
@@ -667,6 +717,45 @@
           "internalType": "contract ISeed",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "remainCrossbows_Ronin",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "remainCrossbows_SM",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "remainPortions",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
         }
       ],
       "stateMutability": "view",
