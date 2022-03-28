@@ -1,11 +1,10 @@
 import React from 'react';
 import './style.css';
-import Img from '../../../../assest/images/img1.png'
-const CardBank = () =>{
+const CardBank = ({Img,Rs,pool,earn}) =>{
     return(<>
         <div className={'CardBank '}>
 <div className={'CardBankTitle'}>
-    Minecraft Mods
+    {pool}
 </div>
             <div className={'CardbankLogo'}>
                 <img width={80} src={Img} alt={'/'} />
@@ -15,20 +14,20 @@ const CardBank = () =>{
             </div>
             <div className={'countBank'}>
                 <h1>0.00000000</h1>
-                <p>minecraft</p>
+                <p>{earn}</p>
             </div>
 
             <div className={'buttonBank'}>
-                <div className={'buttonLp'}>unstake bribe - wavax lp</div>
+                <div className={'buttonLp'}>unstake {Rs}</div>
                 <div className={'buttonLp m-2 p-2'}>+</div>
             </div>
 
             <div className={'Apr'}>
-                <div>apr:</div>
+                <div>apy:</div>
                 <div>250.14%</div>
             </div>
             <div className={'Apr'}>
-                <div>apr:</div>
+                <div>your stake:</div>
                 <div>250.14%</div>
             </div>
 
