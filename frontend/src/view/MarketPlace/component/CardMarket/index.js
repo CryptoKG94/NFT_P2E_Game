@@ -42,11 +42,15 @@ const CardMarket = ({
             {
                 !isOwner ?
                     <div className="button-group">
-                        <input type={'number'}
-                            className={'InputCheck'}
-                            onChange={handleChangeAmount}
-                            value={bidPrice}
-                        />
+                        <div>
+                            <input type={'number'}
+                                className={'InputField'}
+                                onChange={handleChangeAmount}
+                                value={bidPrice}
+                                id='auction-price'
+                            />
+                            <label htmlFor='auction-price' className='auction-price'>(YEN)</label>
+                        </div>
                         <ButtonBuy func={() => auction(tokenId, bidPrice)} text={!isApprovedForYen ? 'Approve Yen' : 'Offer'} />
                     </div>
                     :

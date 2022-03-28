@@ -10,6 +10,7 @@ import ContractUtils from '../../utils/contractUtils';
 import { useHistory } from 'react-router-dom';
 import { SUCCESS, WARNNING } from '../../utils/Constants';
 import Toast from '../../components/Toast';
+import Loading from '../../components/Loading';
 
 const initNFTInfo = {
     balance: new BigNumber(0),
@@ -25,6 +26,7 @@ const MyNft = () => {
     const [isApproved, setIsApproved] = useState(false);
     const [nftInfo, setNFTInfo] = useState();
     const [fetchFlag, setFetchFlag] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const history = useHistory();
 
@@ -33,12 +35,14 @@ const MyNft = () => {
     }
 
 
-    useEffect(() => {
+    useEffect(async () => {
         if (fetchFlag && account) {
-            console.log('fetchFlag:  TRUE')
-            fetchIsApprovedForAll()
-            fetchNFTInfo()
-            setFetchFlag(false)
+            // console.log('fetchFlag:  TRUE')
+            setLoading(true);
+            await fetchIsApprovedForAll();
+            await fetchNFTInfo();
+            setFetchFlag(false);
+            setLoading(false);
         }
     }, [account, fetchFlag])
 
@@ -131,6 +135,9 @@ const MyNft = () => {
                     }
                 </div>
             </div>
+            <Loading
+                open={loading}
+            />
             <Toast
                 open={showToast}
                 message={toastMessage}

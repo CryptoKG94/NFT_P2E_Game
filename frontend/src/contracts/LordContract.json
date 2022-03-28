@@ -426,9 +426,9 @@
               "type": "uint16"
             },
             {
-              "internalType": "uint80",
+              "internalType": "uint256",
               "name": "value",
-              "type": "uint80"
+              "type": "uint256"
             },
             {
               "internalType": "address",
@@ -511,9 +511,9 @@
           "type": "uint16"
         },
         {
-          "internalType": "uint80",
+          "internalType": "uint256",
           "name": "value",
-          "type": "uint80"
+          "type": "uint256"
         },
         {
           "internalType": "address",
@@ -626,9 +626,9 @@
           "type": "uint16"
         },
         {
-          "internalType": "uint80",
+          "internalType": "uint256",
           "name": "value",
-          "type": "uint80"
+          "type": "uint256"
         },
         {
           "internalType": "address",
@@ -727,9 +727,9 @@
       "name": "remainCrossbows_Ronin",
       "outputs": [
         {
-          "internalType": "uint16",
+          "internalType": "uint80",
           "name": "",
-          "type": "uint16"
+          "type": "uint80"
         }
       ],
       "stateMutability": "view",
@@ -740,9 +740,9 @@
       "name": "remainCrossbows_SM",
       "outputs": [
         {
-          "internalType": "uint16",
+          "internalType": "uint80",
           "name": "",
-          "type": "uint16"
+          "type": "uint80"
         }
       ],
       "stateMutability": "view",
@@ -753,9 +753,9 @@
       "name": "remainPortions",
       "outputs": [
         {
-          "internalType": "uint16",
+          "internalType": "uint80",
           "name": "",
-          "type": "uint16"
+          "type": "uint80"
         }
       ],
       "stateMutability": "view",

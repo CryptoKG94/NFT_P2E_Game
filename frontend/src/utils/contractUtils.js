@@ -2,6 +2,7 @@ import Contract from 'web3-eth-contract';
 import * as Constants from './Constants';
 import BigNumber from "bignumber.js";
 import { constants } from 'buffer';
+import { getBalanceNumber } from '../components/formatBalance';
 
 const Web3 = require('web3');
 const SnRContract = require("../contracts/SnRContract.json");
@@ -688,7 +689,7 @@ export const getMerchantInfo = async (provider) => {
         const totalPortions = await lordContract.methods.TOTAL_PORTION().call();
         const remainPortions = await lordContract.methods.remainPortions().call();
 
-        data.portionPrice = portionPrice;
+        data.portionPrice = getBalanceNumber(portionPrice);
         data.totalPortions = totalPortions;
         data.remainPortions = remainPortions;
 
@@ -696,7 +697,7 @@ export const getMerchantInfo = async (provider) => {
         const totalCrossbows_Ronin = await lordContract.methods.TOTAL_CROSSBOW_RONIN().call();
         const remainCrossbows_Ronin = await lordContract.methods.remainCrossbows_Ronin().call();
 
-        data.crossbowPrice_Ronin = crossbowPrice_Ronin;
+        data.crossbowPrice_Ronin = getBalanceNumber(crossbowPrice_Ronin);
         data.totalCrossbows_Ronin = totalCrossbows_Ronin;
         data.remainCrossbows_Ronin = remainCrossbows_Ronin;
 
@@ -704,7 +705,7 @@ export const getMerchantInfo = async (provider) => {
         const totalCrossbows_SM = await lordContract.methods.TOTAL_CROSSBOW_SM().call();
         const remainCrossbows_SM = await lordContract.methods.remainCrossbows_SM().call();
 
-        data.crossbowPrice_SM = crossbowPrice_SM;
+        data.crossbowPrice_SM = getBalanceNumber(crossbowPrice_SM);
         data.totalCrossbows_SM = totalCrossbows_SM;;
         data.remainCrossbows_SM = remainCrossbows_SM;
 
@@ -712,7 +713,7 @@ export const getMerchantInfo = async (provider) => {
         const totalShields = await snrContract.methods.TOTAL_SHIELD().call();
         const remainShields = await snrContract.methods.remainShields().call();
 
-        data.shieldPrice = shieldPrice;
+        data.shieldPrice = getBalanceNumber(shieldPrice);
         data.totalShields = totalShields;
         data.remainShields = remainShields;
 

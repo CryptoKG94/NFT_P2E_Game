@@ -69,6 +69,7 @@ align-items: center;
     display: flex;
     flex-direction: row;
     background: red;
-padding: 3px 12px;
+    padding: 3px 12px;
     margin: 3px;
+    cursor: pointer;
 }

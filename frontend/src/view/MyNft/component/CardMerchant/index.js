@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './style.css';
 import Img from '../../../../assest/images/img1.png'
 import ButtonBuy from '../../../../assest/Style/ButtonBuy';
@@ -25,12 +25,16 @@ const CardMarket = (props) => {
                 </div>
             </div>
             <div className='button-group'>
-                <input type={'number'}
-                    className={'InputCheck'}
-                    onChange={handleChangeAmount}
-                    value={startPrice}
-                />
-                <ButtonBuy func={() => handleOnSale(tokenId, startPrice)} text={isApproved ? 'On Sale' : 'Approve'}/>
+                <div>
+                    <input type={'number'}
+                        className={'InputField'}
+                        onChange={handleChangeAmount}
+                        value={startPrice}
+                        id={'onsale-price'}
+                    />
+                    <label htmlFor='onsale-price' className='onsale-price'>(YEN)</label>
+                </div>
+                <ButtonBuy func={() => handleOnSale(tokenId, startPrice)} text={isApproved ? 'On Sale' : 'Approve'} />
             </div>
 
         </div>

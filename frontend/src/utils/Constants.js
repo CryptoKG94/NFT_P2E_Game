@@ -1,9 +1,9 @@
 export const ContractAddress = "0x181aB2d2F0143cd2046253c56379f7eDb1E9C133";
 export const YENAddress = "0x096E08a74FD4C72a7A1D1ed6e228307180a4cB00";
 export const TraitsAddress = "0x9023A6A797AE09Ba7de65b3D7e5b53c2e67Fc75F";
-export const SnRAddress = "0x8BD645baCb699313bcF1B0060C073A0583E925de";
-export const LordAddress = "0x1c0061283a85155dbfD3a1040a1d0B79C8a78B04";
-export const MarketPlaceAddress = "0xEe91aa2D879d5289D376689ded05C73f0Ca463FA";
+export const SnRAddress = "0x63Fe1694D899C80F68F0c2f1455f835331C3D231";
+export const LordAddress = "0xef83D5c21707F0Bdae106Db1CbF154B78144Dc01";
+export const MarketPlaceAddress = "0x414BBCa9A1aA347C2aD06B4cf2F283ce57FC20fc";
 
 const MAINNET = 250
 const TESTNET = 4002
