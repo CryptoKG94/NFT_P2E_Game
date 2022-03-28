@@ -17,8 +17,8 @@ const Navitem = [
         link:'/stack'
 },{
     id: 4,
-    name: 'bank(comming soon)',
-        link: '#'
+    name: 'bank',
+        link: '/bank'
 },{
     id: 5,
     name: 'merchant',
