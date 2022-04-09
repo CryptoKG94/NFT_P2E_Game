@@ -1,0 +1,26 @@
+Notes:
+
+
+the layer order start from 1 to 8
+
+Generate ronin :
+1. base body
+2. shoes
+3. outfit
+4. eyes
+5. mouth
+6. acc
+7. headwear
+8. weapons
+
+
+
+Generate samurai
+1. Base body
+2. shoes (NO SHOES)
+3. outfit
+4. eyes
+5. skipped mouth because of full face acc
+6. acc
+7. headwear
+8. weapons
