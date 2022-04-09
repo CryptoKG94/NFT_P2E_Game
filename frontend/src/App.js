@@ -27,7 +27,7 @@ function App() {
                   <Route path="/" exact component={MainPage} />
                   <Route path="/dashboard" exact component={statics} />
                   <Route path="/recruit" exact component={Recruit} />
-                  <Route path="/stack" exact component={Stake} />
+                  <Route path="/stake" exact component={Stake} />
                   <Route path="/mynft" exact component={MyNft} />
                   <Route path="/bank" exact component={Bank} />
                   <Route path="/static" exact component={statics} />

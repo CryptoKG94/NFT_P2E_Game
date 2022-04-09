@@ -13,8 +13,8 @@ const Navitem = [
         link: '/recruit'
 },{
     id: 3,
-    name: 'stack',
-        link:'/stack'
+    name: 'stake',
+        link:'/stake'
 },{
     id: 4,
     name: 'bank',

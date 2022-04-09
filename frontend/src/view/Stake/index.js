@@ -355,7 +355,7 @@ const Stake = () => {
     }
 
     return (<>
-        <div className={'recruit stack'}>
+        <div className={'recruit stake'}>
             <div className={'displayRecruit mt-4'}>
                 <div className={'row container recruitButton'}>
                     <div className={'col-4 text-center'}>
@@ -376,8 +376,8 @@ const Stake = () => {
             <div className={'items-container'}>
                 <div className={'StackV container'}>
                     <div className={'stackDiv'}>
-                        <div className={tabStatus == STAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(STAKETAB)}>Stack - 30</div>
-                        <div className={tabStatus == UNSTAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStack - 30</div>
+                        <div className={tabStatus == STAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(STAKETAB)}>Stake - 30</div>
+                        <div className={tabStatus == UNSTAKETAB ? 'stake tabsel' : 'stake'} onClick={() => setTabStatus(UNSTAKETAB)}>unStake - 30</div>
                     </div>
                     {tabStatus == STAKETAB ?
                         <div className={'d-flex justify-content-center align-items-center'}>
@@ -397,7 +397,7 @@ const Stake = () => {
                         alignItems: 'center',
                     }}>
                     <div className={'textStake'}>
-                        you can only unstake if ronin collected at least 2$ bribe
+                        you can only unstake if ronin collected at least 20,000 YEN
                     </div>
                     {tabStatus == STAKETAB ?
                         <div style={{

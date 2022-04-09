@@ -7,7 +7,7 @@ import Home from "./component/home";
 const MainPage = () =>{
     return(<>
         <div className={'dashboard'}>
-<Navbar/>
+            <Navbar/>
             <Home/>
 
         </div>

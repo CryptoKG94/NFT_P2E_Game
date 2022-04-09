@@ -30,8 +30,10 @@ const statics = () => {
 				<div className={'container'}>
 					<div className={'blackGlass mt-5'}>
 						<div className={'mainBar'}>
-							<div className={'statistic'}>Statistic</div>
-							<div className={'statistic'}>Leaderboard</div>
+							<div className={'statistic'}>
+								<h1>Statistic</h1>
+							</div>
+							{/* <div className={'statistic'}>Leaderboard</div> */}
 						</div>
 
 						<div className={'mainBar mt-5'}>

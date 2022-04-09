@@ -13,7 +13,8 @@ const YenContract = require("../contracts/YENContract.json");
 const YenContractABI = YenContract["abi"];
 const MarketplaceContract = require("../contracts/MarketPlace.json");
 const MarketplaceContractABI = MarketplaceContract["abi"];
-
+const BankContract = require("../contracts/BankContract.json");
+const BankContractABI = BankContract["abi"];
 // MCB
 // import { ethers } from "ethers";
 //
@@ -730,6 +731,61 @@ export const getMerchantInfo = async (provider) => {
     }
 }
 
+export const DepositYEN = async (provider, account, poolId, amount) => {
+    const web3 = new Web3(provider);
+    let bankContract = await new web3.eth.Contract(BankContractABI, Constants.BankAddress);
+
+    try {
+        await bankContract.methods.deposit(amount).send({ from: account });
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: "fail"
+        }
+    }
+}
+
+export const HarvestRewards = async (provider, account) => {
+    const web3 = new Web3(provider);
+    let bankContract = await new web3.eth.Contract(BankContractABI, Constants.BankAddress);
+
+    try {
+        await bankContract.methods.withdraw(0).send({ from: account });
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: "fail"
+        }
+    }
+    
+}
+
+export const WithdrawYEN = async (provider, account, amount) => {
+    const web3 = new Web3(provider);
+    let bankContract = await new web3.eth.Contract(BankContractABI, Constants.BankAddress);
+
+    try {
+        await bankContract.methods.withdraw(amount).send({ from: account });
+        return {
+            success: true,
+            status: "success"
+        }
+    } catch (err) {
+        return {
+            success: false,
+            status: "fail"
+        }
+    }
+}
+
 // #endregion
 
 const ContractUtils = {
@@ -746,6 +802,9 @@ const ContractUtils = {
     isApprovedForYENToStaking,
     setApprovalForYENToStaking,
     getMerchantInfo,
+    DepositYEN,
+    HarvestRewards,
+    WithdrawYEN,
     //
 
     fetchStakingReward,

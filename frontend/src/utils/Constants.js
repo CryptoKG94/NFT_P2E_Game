@@ -4,6 +4,7 @@ export const TraitsAddress = "0x9023A6A797AE09Ba7de65b3D7e5b53c2e67Fc75F";
 export const SnRAddress = "0x63Fe1694D899C80F68F0c2f1455f835331C3D231";
 export const LordAddress = "0xef83D5c21707F0Bdae106Db1CbF154B78144Dc01";
 export const MarketPlaceAddress = "0x414BBCa9A1aA347C2aD06B4cf2F283ce57FC20fc";
+export const BankAddress = "0xa59bFDebF3A1E5f1eC524827A51720315ab6D854";
 
 const MAINNET = 250
 const TESTNET = 4002
